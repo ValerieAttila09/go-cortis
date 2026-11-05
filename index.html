@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CORTIS — GO! Interactive Music Experience</title>
+  
+  <!-- Typography Imports: Anton, Archivo Black, Space Grotesk, IBM Plex Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=IBM+Plex+Mono:ital,wght@0,400;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- External Animation & Utility Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* ==========================================================================
+       01. DESIGN SYSTEM & CSS VARIABLES
+       ========================================================================== */
+    :root {
+      --color-yellow: #F5E900;
+      --color-blue: #174BE8;
+      --color-white: #FFFFFF;
+      --color-black: #111111;
+      --color-dark-gray: #1E1E1E;
+      --color-mid-gray: #2D2D2D;
+      --color-light-gray: #E0E0E0;
+
+      --font-display-anton: 'Anton', sans-serif;
+      --font-display-archivo: 'Archivo Black', sans-serif;
+      --font-body: 'Space Grotesk', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    /* ==========================================================================
+       02. RESET & GLOBAL STYLES
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: initial;
+      background-color: var(--color-black);
+      color: var(--color-white);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      selection-background-color: var(--color-yellow);
+      selection-color: var(--color-black);
+    }
+
+    ::selection {
+      background: var(--color-yellow);
+      color: var(--color-black);
+    }
+
+    body {
+      overflow-x: hidden;
+      width: 100vw;
+      min-height: 100vh;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      cursor: default;
+    }
+
+    img, video {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      user-select: none;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Noise Texture Overlay */
+    .noise-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.035;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* ==========================================================================
+       03. CUSTOM CURSOR
+       ========================================================================== */
+    .custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: var(--color-yellow);
+      mix-blend-mode: difference;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+    }
+
+    .custom-cursor.hovered {
+      width: 50px;
+      height: 50px;
+      background-color: var(--color-blue);
+    }
+
+    /* Hide cursor on touch devices */
+    @media (pointer: coarse) {
+      .custom-cursor { display: none !important; }
+    }
+
+    /* ==========================================================================
+       04. UTILITIES & STREETWEAR BRUTALISM COMPONENTS
+       ========================================================================== */
+    .bg-yellow { background-color: var(--color-yellow) !important; color: var(--color-black) !important; }
+    .bg-blue { background-color: var(--color-blue) !important; color: var(--color-white) !important; }
+    .bg-black { background-color: var(--color-black) !important; color: var(--color-white) !important; }
+    .bg-white { background-color: var(--color-white) !important; color: var(--color-black) !important; }
+
+    .text-yellow { color: var(--color-yellow) !important; }
+    .text-blue { color: var(--color-blue) !important; }
+    .text-black { color: var(--color-black) !important; }
+    .text-white { color: var(--color-white) !important; }
+
+    .font-anton { font-family: var(--font-display-anton); text-transform: uppercase; }
+    .font-archivo { font-family: var(--font-display-archivo); text-transform: uppercase; }
+    .font-mono { font-family: var(--font-mono); }
+
+    /* Sticker Badges */
+    .sticker {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 2px solid var(--color-black);
+      box-shadow: 4px 4px 0px var(--color-black);
+      transform: rotate(-2deg);
+      user-select: none;
+    }
+    .sticker-yellow { background: var(--color-yellow); color: var(--color-black); }
+    .sticker-blue { background: var(--color-blue); color: var(--color-white); }
+    .sticker-white { background: var(--color-white); color: var(--color-black); }
+
+    /* Brutalist Tape Effect */
+    .tape-accent {
+      position: relative;
+    }
+    .tape-accent::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 20px;
+      width: 70px;
+      height: 24px;
+      background: rgba(245, 233, 0, 0.75);
+      transform: rotate(-6deg);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Infinite Marquee */
+    .marquee-container {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      display: flex;
+      background: var(--color-yellow);
+      color: var(--color-black);
+      padding: 0.75rem 0;
+      border-top: 3px solid var(--color-black);
+      border-bottom: 3px solid var(--color-black);
+    }
+    .marquee-content {
+      display: flex;
+      animation: marquee 20s linear infinite;
+    }
+    .marquee-item {
+      font-family: var(--font-display-anton);
+      font-size: 2.25rem;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Section Label Badge */
+    .section-tag {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-yellow);
+      margin-bottom: 1.5rem;
+    }
+    .section-tag::before {
+      content: '';
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      background-color: var(--color-yellow);
+      clip-path: polygon(100% 50%, 0 0, 0 100%);
+    }
+
+    /* Responsive Clamp Typography */
+    .display-giant {
+      font-family: var(--font-display-anton);
+      font-size: clamp(4.5rem, 15vw, 18rem);
+      line-height: 0.85;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+    }
+    .title-h1 {
+      font-family: var(--font-display-archivo);
+      font-size: clamp(2.5rem, 6vw, 6rem);
+      line-height: 0.95;
+      text-transform: uppercase;
+    }
+    .title-h2 {
+      font-family: var(--font-display-archivo);
+      font-size: clamp(1.8rem, 4vw, 3.5rem);
+      line-height: 1.05;
+      text-transform: uppercase;
+    }
+
+    /* ==========================================================================
+       05. NAVIGATION & GLOBAL CONTROLS
+       ========================================================================== */
+    .nav-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      mix-blend-mode: difference;
+    }
+
+    .nav-brand {
+      font-family: var(--font-display-anton);
+      font-size: 1.8rem;
+      letter-spacing: 0.05em;
+      color: var(--color-white);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.75rem;
+      align-items: center;
+      list-style: none;
+    }
+
+    .nav-link {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-white);
+      position: relative;
+      padding: 0.2rem 0;
+      transition: color 0.2s ease;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background-color: var(--color-yellow);
+      transition: width 0.3s var(--ease-out-expo);
+    }
+    .nav-link:hover::after { width: 100%; }
+
+    /* Language Switcher */
+    .lang-switcher {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid var(--color-white);
+      border-radius: 999px;
+      padding: 2px;
+      background: rgba(0,0,0,0.4);
+    }
+    .lang-btn {
+      padding: 0.25rem 0.65rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 999px;
+      transition: all 0.2s ease;
+    }
+    .lang-btn.active {
+      background-color: var(--color-yellow);
+      color: var(--color-black);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-bar { padding: 1rem; }
+    }
+
+    /* ==========================================================================
+       06. PERSISTENT GLOBAL AUDIO WIDGET
+       ========================================================================== */
+    .audio-widget {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--color-black);
+      border: 2px solid var(--color-yellow);
+      padding: 0.6rem 1.1rem;
+      box-shadow: 6px 6px 0px var(--color-blue);
+      border-radius: 4px;
+      transition: transform 0.3s var(--ease-out-expo);
+    }
+
+    .audio-play-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--color-yellow);
+      color: var(--color-black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+    .audio-play-btn:hover { transform: scale(1.1); }
+
+    .audio-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .audio-track-title {
+      font-family: var(--font-display-archivo);
+      font-size: 0.85rem;
+      line-height: 1;
+      color: var(--color-white);
+    }
+    .audio-preset-tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--color-yellow);
+      letter-spacing: 0.05em;
+    }
+
+    .audio-vis-mini {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 18px;
+      width: 24px;
+    }
+    .audio-bar {
+      flex: 1;
+      background: var(--color-yellow);
+      height: 20%;
+      transition: height 0.15s ease;
+    }
+    .audio-widget.playing .audio-bar {
+      animation: audioBarPulse 0.6s ease-in-out infinite alternate;
+    }
+    .audio-widget.playing .audio-bar:nth-child(2) { animation-delay: 0.15s; }
+    .audio-widget.playing .audio-bar:nth-child(3) { animation-delay: 0.3s; }
+    .audio-widget.playing .audio-bar:nth-child(4) { animation-delay: 0.45s; }
+
+    @keyframes audioBarPulse {
+      0% { height: 15%; }
+      100% { height: 100%; }
+    }
+
+    /* Custom File Input Trigger */
+    .audio-upload-btn {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--color-white);
+      text-decoration: underline;
+      opacity: 0.7;
+      margin-left: 0.5rem;
+      cursor: pointer;
+    }
+    .audio-upload-btn:hover { opacity: 1; color: var(--color-yellow); }
+
+    /* ==========================================================================
+       07. SECTION 00 — INTRO EXPERIENCE (SPLASH SCREEN)
+       ========================================================================== */
+    #intro-screen {
+      position: fixed;
+      inset: 0;
+      background-color: var(--color-black);
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      overflow: hidden;
+    }
+
+    .intro-bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .intro-title-wrapper {
+      position: relative;
+      text-align: center;
+    }
+
+    .intro-cortis-tag {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      letter-spacing: 0.4em;
+      color: var(--color-yellow);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    .intro-big-go {
+      font-family: var(--font-display-anton);
+      font-size: clamp(6rem, 28vw, 26rem);
+      line-height: 0.75;
+      color: var(--color-yellow);
+      text-shadow: 10px 10px 0px var(--color-blue);
+      letter-spacing: -0.03em;
+    }
+
+    .intro-enter-btn {
+      margin-top: 3rem;
+      background: var(--color-yellow);
+      color: var(--color-black);
+      font-family: var(--font-display-archivo);
+      font-size: clamp(1.2rem, 3vw, 2.2rem);
+      padding: 1.2rem 3rem;
+      border: 4px solid var(--color-black);
+      box-shadow: 8px 8px 0px var(--color-white);
+      transform: rotate(-1deg);
+      transition: all 0.25s var(--ease-out-expo);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .intro-enter-btn:hover {
+      transform: scale(1.05) rotate(1deg);
+      background: var(--color-white);
+      box-shadow: 12px 12px 0px var(--color-blue);
+    }
+
+    /* ==========================================================================
+       08. SECTION 01 — HERO
+       ========================================================================== */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 2rem 4rem 2rem;
+      background-color: var(--color-yellow);
+      color: var(--color-black);
+      overflow: hidden;
+      border-bottom: 4px solid var(--color-black);
+    }
+
+    .hero-bg-graphic {
+      position: absolute;
+      top: 50%;
+      right: -5%;
+      transform: translateY(-50%) rotate(12deg);
+      font-family: var(--font-display-anton);
+      font-size: 40vw;
+      color: rgba(23, 75, 232, 0.15);
+      pointer-events: none;
+      user-select: none;
+      line-height: 1;
+    }
+
+    .hero-header {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--color-black);
+      color: var(--color-yellow);
+      padding: 0.4rem 1rem;
+      display: inline-block;
+    }
+
+    .hero-main-title {
+      font-family: var(--font-display-anton);
+      font-size: clamp(7rem, 25vw, 24rem);
+      line-height: 0.75;
+      text-transform: uppercase;
+      color: var(--color-black);
+      letter-spacing: -0.04em;
+      word-break: break-word;
+      text-shadow: 12px 12px 0px var(--color-white);
+    }
+
+    .hero-collage-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1.5rem;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 3;
+    }
+
+    .hero-card-main {
+      grid-column: span 7;
+      background: var(--color-black);
+      color: var(--color-white);
+      padding: 2.5rem;
+      border: 3px solid var(--color-black);
+      box-shadow: 8px 8px 0px var(--color-blue);
+      position: relative;
+    }
+
+    .hero-card-side {
+      grid-column: span 5;
+      background: var(--color-blue);
+      color: var(--color-white);
+      padding: 2.5rem;
+      border: 3px solid var(--color-black);
+      box-shadow: 8px 8px 0px var(--color-black);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    @media (max-width: 900px) {
+      .hero-card-main, .hero-card-side { grid-column: span 12; }
+    }
+
+    /* ==========================================================================
+       09. SECTION 02 — MEET CORTIS
+       ========================================================================== */
+    #meet-cortis {
+      padding: 8rem 2rem;
+      background-color: var(--color-black);
+      color: var(--color-white);
+      position: relative;
+    }
+
+    .cortis-manifesto-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      margin-top: 3rem;
+    }
+
+    .manifesto-box {
+      border: 3px solid var(--color-yellow);
+      padding: 3rem;
+      background: var(--color-dark-gray);
+      position: relative;
+      box-shadow: 10px 10px 0px var(--color-blue);
+    }
+
+    .manifesto-quote {
+      font-family: var(--font-display-archivo);
+      font-size: clamp(1.4rem, 3.2vw, 2.8rem);
+      line-height: 1.15;
+      color: var(--color-yellow);
+      margin-bottom: 1.5rem;
+    }
+
+    .manifesto-body {
+      font-size: 1.1rem;
+      color: var(--color-light-gray);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 900px) {
+      .cortis-manifesto-grid { grid-template-columns: 1fr; gap: 2rem; }
+    }
+
+    /* ==========================================================================
+       10. SECTION 03 — THE MEMBERS
+       ========================================================================== */
+    #members {
+      padding: 8rem 2rem;
+      background-color: var(--color-blue);
+      color: var(--color-white);
+      position: relative;
+      border-top: 4px solid var(--color-black);
+      border-bottom: 4px solid var(--color-black);
+    }
+
+    .members-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .member-tab-btn {
+      font-family: var(--font-display-archivo);
+      font-size: 1.3rem;
+      padding: 0.8rem 1.8rem;
+      background: var(--color-black);
+      color: var(--color-white);
+      border: 2px solid var(--color-white);
+      box-shadow: 4px 4px 0px var(--color-yellow);
+      transition: all 0.25s ease;
+    }
+
+    .member-tab-btn.active, .member-tab-btn:hover {
+      background: var(--color-yellow);
+      color: var(--color-black);
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px var(--color-black);
+    }
+
+    .member-card-wrapper {
+      background: var(--color-black);
+      border: 4px solid var(--color-black);
+      box-shadow: 14px 14px 0px var(--color-yellow);
+      display: grid;
+      grid-template-columns: 5fr 7fr;
+      gap: 0;
+      overflow: hidden;
+    }
+
+    .member-image-frame {
+      position: relative;
+      background: var(--color-mid-gray);
+      min-height: 450px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-right: 3px solid var(--color-black);
+    }
+
+    .member-portrait-svg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .member-details {
+      padding: 3.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background-color: var(--color-black);
+    }
+
+    .member-name {
+      font-family: var(--font-display-anton);
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      line-height: 0.85;
+      color: var(--color-yellow);
+      margin-bottom: 1rem;
+    }
+
+    .member-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin: 2rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+    }
+
+    .stat-item {
+      border-left: 3px solid var(--color-yellow);
+      padding-left: 0.75rem;
+    }
+
+    .stat-label {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    .stat-val {
+      color: var(--color-white);
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .member-card-wrapper { grid-template-columns: 1fr; }
+      .member-details { padding: 2rem; }
+    }
+
+    /* ==========================================================================
+       11. SECTION 04 — THE STORY OF GO!
+       ========================================================================== */
+    #story {
+      padding: 8rem 2rem;
+      background-color: var(--color-white);
+      color: var(--color-black);
+    }
+
+    .timeline-container {
+      margin-top: 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      position: relative;
+    }
+
+    .timeline-card {
+      background: var(--color-yellow);
+      border: 3px solid var(--color-black);
+      box-shadow: 8px 8px 0px var(--color-black);
+      padding: 2.5rem;
+      display: grid;
+      grid-template-columns: 2fr 10fr;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    .timeline-step {
+      font-family: var(--font-display-anton);
+      font-size: 3.5rem;
+      line-height: 1;
+      color: var(--color-blue);
+    }
+
+    .timeline-content h3 {
+      font-family: var(--font-display-archivo);
+      font-size: 1.8rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .timeline-content p {
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .timeline-card { grid-template-columns: 1fr; gap: 1rem; }
+    }
+
+    /* ==========================================================================
+       12. SECTION 05 — INSIDE THE ALBUM
+       ========================================================================== */
+    #album {
+      padding: 8rem 2rem;
+      background-color: var(--color-black);
+      color: var(--color-white);
+    }
+
+    .album-hero-grid {
+      display: grid;
+      grid-template-columns: 5fr 7fr;
+      gap: 4rem;
+      align-items: center;
+      margin-top: 3rem;
+    }
+
+    .album-art-container {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      background: var(--color-yellow);
+      border: 4px solid var(--color-white);
+      box-shadow: 12px 12px 0px var(--color-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tracklist-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .track-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      background: var(--color-dark-gray);
+      border: 2px solid var(--color-mid-gray);
+      transition: all 0.25s ease;
+    }
+
+    .track-row.featured {
+      background: var(--color-yellow);
+      color: var(--color-black);
+      border-color: var(--color-black);
+      box-shadow: 6px 6px 0px var(--color-blue);
+      transform: translateX(10px);
+    }
+
+    .track-title {
+      font-family: var(--font-display-archivo);
+      font-size: 1.3rem;
+    }
+
+    .track-time {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .album-hero-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ==========================================================================
+       13. SECTION 06 — DECODE THE SOUND (AUDIO VISUALIZER)
+       ========================================================================== */
+    #sound {
+      padding: 8rem 2rem;
+      background-color: var(--color-black);
+      color: var(--color-white);
+      position: relative;
+      border-top: 4px solid var(--color-yellow);
+    }
+
+    .sound-visualizer-box {
+      width: 100%;
+      height: 380px;
+      background: #000;
+      border: 3px solid var(--color-yellow);
+      box-shadow: 10px 10px 0px var(--color-blue);
+      margin: 3rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #visualizer-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .sound-breakdown-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .sound-card {
+      background: var(--color-dark-gray);
+      border: 2px solid var(--color-mid-gray);
+      padding: 2rem;
+      border-left: 6px solid var(--color-yellow);
+    }
+
+    .sound-card h4 {
+      font-family: var(--font-display-archivo);
+      font-size: 1.3rem;
+      color: var(--color-yellow);
+      margin-bottom: 0.75rem;
+    }
+
+    /* ==========================================================================
+       14. SECTION 07 — LYRICS BREAKDOWN
+       ========================================================================== */
+    #lyrics {
+      padding: 8rem 2rem;
+      background-color: var(--color-yellow);
+      color: var(--color-black);
+    }
+
+    .lyrics-container {
+      margin-top: 3rem;
+      display: grid;
+      grid-template-columns: 4fr 8fr;
+      gap: 3rem;
+    }
+
+    .lyrics-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .lyric-segment-btn {
+      text-align: left;
+      font-family: var(--font-display-archivo);
+      font-size: 1.25rem;
+      padding: 1rem 1.5rem;
+      background: var(--color-black);
+      color: var(--color-white);
+      border: 2px solid var(--color-black);
+      transition: all 0.2s ease;
+    }
+
+    .lyric-segment-btn.active, .lyric-segment-btn:hover {
+      background: var(--color-blue);
+      color: var(--color-white);
+      transform: translateX(10px);
+      box-shadow: 4px 4px 0px var(--color-black);
+    }
+
+    .lyric-display-box {
+      background: var(--color-white);
+      border: 3px solid var(--color-black);
+      box-shadow: 10px 10px 0px var(--color-black);
+      padding: 3rem;
+    }
+
+    .lyric-excerpt {
+      font-family: var(--font-display-archivo);
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      line-height: 1.2;
+      color: var(--color-blue);
+      margin-bottom: 2rem;
+      border-left: 6px solid var(--color-yellow);
+      padding-left: 1.25rem;
+    }
+
+    .lyric-analysis-text {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: var(--color-dark-gray);
+    }
+
+    @media (max-width: 900px) {
+      .lyrics-container { grid-template-columns: 1fr; }
+    }
+
+    /* ==========================================================================
+       15. SECTION 08 — VISUAL ARCHIVE & BTS VIDEO
+       ========================================================================== */
+    #archive {
+      padding: 8rem 2rem;
+      background-color: var(--color-black);
+      color: var(--color-white);
+    }
+
+    .archive-video-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      margin-top: 3rem;
+    }
+
+    .video-card {
+      background: var(--color-dark-gray);
+      border: 3px solid var(--color-yellow);
+      box-shadow: 8px 8px 0px var(--color-blue);
+      padding: 1.5rem;
+    }
+
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      background: #000;
+      margin-bottom: 1.25rem;
+      border: 2px solid var(--color-black);
+    }
+
+    .video-wrapper iframe, .video-wrapper video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .video-title {
+      font-family: var(--font-display-archivo);
+      font-size: 1.4rem;
+      color: var(--color-yellow);
+      margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .archive-video-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ==========================================================================
+       16. SECTION 09 — CREDITS & OUTRO
+       ========================================================================== */
+    #credits {
+      padding: 8rem 2rem 4rem 2rem;
+      background-color: var(--color-yellow);
+      color: var(--color-black);
+      border-top: 4px solid var(--color-black);
+    }
+
+    .credits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 3rem;
+      margin: 4rem 0;
+    }
+
+    .credit-group h4 {
+      font-family: var(--font-display-archivo);
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      border-bottom: 3px solid var(--color-black);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .credit-list {
+      list-style: none;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      display: flex;
+      flex-direction: flex-column;
+      gap: 0.4rem;
+    }
+
+    .disclaimer-box {
+      margin-top: 5rem;
+      padding: 2rem;
+      background: var(--color-black);
+      color: var(--color-white);
+      border: 3px solid var(--color-black);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .replay-btn {
+      background: var(--color-yellow);
+      color: var(--color-black);
+      font-family: var(--font-display-archivo);
+      font-size: 1.1rem;
+      padding: 0.8rem 1.8rem;
+      border: 2px solid var(--color-black);
+      box-shadow: 4px 4px 0px var(--color-white);
+      transition: all 0.2s ease;
+    }
+    .replay-btn:hover {
+      transform: scale(1.05);
+      background: var(--color-white);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Noise Overlay -->
+  <div class="noise-bg"></div>
+
+  <!-- Custom Cursor -->
+  <div class="custom-cursor" id="cursor"></div>
+
+  <!-- GLOBAL PERSISTENT AUDIO WIDGET -->
+  <div class="audio-widget" id="audio-widget">
+    <button class="audio-play-btn" id="audio-toggle-btn" aria-label="Toggle Audio">
+      <i data-lucide="play" id="audio-icon"></i>
+    </button>
+    <div class="audio-info">
+      <span class="audio-track-title">CORTIS — GO!</span>
+      <span class="audio-preset-tag" id="audio-preset-label">PRESET: INTRO</span>
+    </div>
+    <div class="audio-vis-mini">
+      <div class="audio-bar"></div>
+      <div class="audio-bar"></div>
+      <div class="audio-bar"></div>
+      <div class="audio-bar"></div>
+    </div>
+    <label class="audio-upload-btn" title="Load custom audio file">
+      Load MP3
+      <input type="file" id="custom-audio-file" accept="audio/*" style="display: none;">
+    </label>
+  </div>
+
+  <!-- NAVIGATION HEADER -->
+  <header class="nav-bar">
+    <a href="#hero" class="nav-brand">
+      CORTIS <span class="text-yellow">//</span> GO!
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#meet-cortis" class="nav-link" data-i18n="nav_about">ABOUT</a></li>
+      <li><a href="#members" class="nav-link" data-i18n="nav_members">MEMBERS</a></li>
+      <li><a href="#story" class="nav-link" data-i18n="nav_story">STORY</a></li>
+      <li><a href="#album" class="nav-link" data-i18n="nav_album">ALBUM</a></li>
+      <li><a href="#sound" class="nav-link" data-i18n="nav_sound">SOUND</a></li>
+      <li><a href="#lyrics" class="nav-link" data-i18n="nav_lyrics">LYRICS</a></li>
+      <li><a href="#archive" class="nav-link" data-i18n="nav_archive">ARCHIVE</a></li>
+    </ul>
+
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+      <button class="lang-btn active" id="lang-en" onclick="switchLanguage('en')">EN</button>
+      <button class="lang-btn" id="lang-id" onclick="switchLanguage('id')">ID</button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       SECTION 00 — INTRO EXPERIENCE (SPLASH SCREEN)
+       ========================================================================== -->
+  <div id="intro-screen">
+    <div class="intro-bg-grid"></div>
+    <div class="intro-title-wrapper">
+      <div class="intro-cortis-tag" data-i18n="intro_tag">BIGHIT MUSIC PRESENTS</div>
+      <div class="intro-big-go">GO!</div>
+      <div class="sticker sticker-yellow" style="transform: rotate(4deg); margin-top: 1rem;">
+        COLOR OUTSIDE THE LINES
+      </div>
+    </div>
+    
+    <button class="intro-enter-btn" id="enter-experience-btn">
+      <span data-i18n="intro_enter_btn">ENTER EXPERIENCE</span>
+      <i data-lucide="arrow-right"></i>
+    </button>
+  </div>
+
+  <!-- MAIN SCROLL CONTAINER -->
+  <main id="main-content">
+
+    <!-- ==========================================================================
+         SECTION 01 — GO! HERO
+         ========================================================================== -->
+    <section id="hero">
+      <div class="hero-bg-graphic">GO</div>
+
+      <div class="hero-header">
+        <div class="hero-meta-row">
+          <span class="hero-subtitle" data-i18n="hero_subtitle">DEBUT SINGLE // 2025</span>
+          <div class="sticker sticker-blue">BIGHIT MUSIC</div>
+        </div>
+
+        <h1 class="hero-main-title">GO!</h1>
+      </div>
+
+      <div class="hero-collage-grid">
+        <div class="hero-card-main">
+          <div class="section-tag" data-i18n="hero_tag">01 // VISUAL STATEMENT</div>
+          <h2 class="title-h2" style="color: var(--color-yellow); margin-bottom: 1rem;" data-i18n="hero_headline">
+            THINK DIFFERENT. MOVE DIFFERENT.
+          </h2>
+          <p style="font-size: 1.15rem; opacity: 0.9;" data-i18n="hero_desc">
+            "GO!" is not just a song; it is CORTIS's musical manifesto. Driven by raw energy, sharp synths, and heavy sub-bass, it signals an uninhibited push past conventional artistic boundaries.
+          </p>
+        </div>
+
+        <div class="hero-card-side">
+          <div>
+            <div class="sticker sticker-white" style="margin-bottom: 1rem;">GENRE DECODED</div>
+            <h3 style="font-family: var(--font-display-archivo); font-size: 1.8rem; margin-bottom: 0.5rem;">
+              MINIMAL TRAP + HYPER-POP
+            </h3>
+            <p style="font-size: 0.95rem; opacity: 0.9;" data-i18n="hero_genre_desc">
+              Pounding 808 bass, metallic percussive textures, and high-energy chant hooks designed for maximum athletic performance and street culture expression.
+            </p>
+          </div>
+          <div style="margin-top: 2rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-yellow);">
+            [ SCROLL DOWN TO EXPLORE ]
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARQUEE ACCENT BAND -->
+    <div class="marquee-container">
+      <div class="marquee-content">
+        <div class="marquee-item"><span>CORTIS</span><span>★</span><span>COLOR OUTSIDE THE LINES</span><span>★</span><span>GO!</span><span>★</span><span>BIGHIT MUSIC</span><span>★</span></div>
+        <div class="marquee-item"><span>CORTIS</span><span>★</span><span>COLOR OUTSIDE THE LINES</span><span>★</span><span>GO!</span><span>★</span><span>BIGHIT MUSIC</span><span>★</span></div>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         SECTION 02 — MEET CORTIS
+         ========================================================================== -->
+    <section id="meet-cortis">
+      <div class="section-tag" data-i18n="sec_02_tag">02 // GROUP IDENTITY</div>
+      <h2 class="title-h1" style="color: var(--color-yellow);" data-i18n="meet_title">MEET CORTIS</h2>
+
+      <div class="cortis-manifesto-grid">
+        <div class="manifesto-box">
+          <div class="sticker sticker-yellow" style="margin-bottom: 1.5rem;">THE NAME ORIGIN</div>
+          <div class="manifesto-quote" data-i18n="manifesto_quote">
+            "COLOR OUTSIDE THE LINES"
+          </div>
+          <p class="manifesto-body" data-i18n="manifesto_desc">
+            The name <strong>CORTIS</strong> is derived from six letters taken directly from the phrase <em>"Color Outside the Lines"</em>. Formed under BIGHIT MUSIC in 2025, the group symbolizes a commitment to free creative expression, unconstrained by societal standards or rigid industry templates.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="title-h2" style="margin-bottom: 1.5rem;" data-i18n="group_philosophy_title">
+            THE FIVE-MEMBER CREATIVE ENGINE
+          </h3>
+          <p style="font-size: 1.1rem; line-height: 1.7; color: var(--color-light-gray); margin-bottom: 1.5rem;" data-i18n="group_philosophy_desc">
+            Composed of MARTIN, JAMES, JUHOON, SEONGHYEON, and KEONHO, CORTIS represents a self-driven generation of artists who write, produce, and choreograph their own material.
+          </p>
+          <div class="sticker sticker-blue">5 MEMBERS // 1 VISION</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 03 — THE MEMBERS
+         ========================================================================== -->
+    <section id="members">
+      <div class="section-tag" style="color: var(--color-black);" data-i18n="sec_03_tag">03 // MEMBER PROFILES</div>
+      <h2 class="title-h1" style="color: var(--color-black); margin-bottom: 2rem;" data-i18n="members_title">THE CREATORS</h2>
+
+      <!-- Member Tabs -->
+      <div class="members-tabs" id="member-tabs">
+        <button class="member-tab-btn active" onclick="showMember('martin')">01. MARTIN</button>
+        <button class="member-tab-btn" onclick="showMember('james')">02. JAMES</button>
+        <button class="member-tab-btn" onclick="showMember('juhoon')">03. JUHOON</button>
+        <button class="member-tab-btn" onclick="showMember('seonghyeon')">04. SEONGHYEON</button>
+        <button class="member-tab-btn" onclick="showMember('keonho')">05. KEONHO</button>
+      </div>
+
+      <!-- Active Member Display Card -->
+      <div class="member-card-wrapper" id="member-card-display">
+        <div class="member-image-frame">
+          <svg class="member-portrait-svg" viewBox="0 0 400 500" id="member-svg-portrait">
+            <!-- Dynamic SVG Graphic generated via JS -->
+          </svg>
+        </div>
+
+        <div class="member-details">
+          <div>
+            <div class="sticker sticker-yellow" id="member-role-sticker">LEADER // PRODUCER</div>
+            <h3 class="member-name" id="member-display-name">MARTIN</h3>
+            <p id="member-display-bio" style="font-size: 1.1rem; line-height: 1.6; color: var(--color-light-gray);">
+              Leader of CORTIS. Born in Songpa-gu, Seoul. Participated in songwriting and production for "GO!", "JoyRide", and "Lullaby".
+            </p>
+          </div>
+
+          <div class="member-stats-grid">
+            <div class="stat-item">
+              <div class="stat-label" data-i18n="stat_hometown">HOMETOWN</div>
+              <div class="stat-val" id="member-val-hometown">Seoul, S. Korea</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label" data-i18n="stat_height">HEIGHT</div>
+              <div class="stat-val" id="member-val-height">190.5 cm (6'3")</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label" data-i18n="stat_credits">ALBUM CREDITS</div>
+              <div class="stat-val" id="member-val-credits">GO!, JoyRide, Lullaby</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label" data-i18n="stat_specialty">SPECIALTY</div>
+              <div class="stat-val" id="member-val-specialty">Vocal Arranging & Beats</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 04 — THE STORY OF GO!
+         ========================================================================== -->
+    <section id="story">
+      <div class="section-tag" style="color: var(--color-blue);" data-i18n="sec_04_tag">04 // CREATIVE JOURNEY</div>
+      <h2 class="title-h1" style="color: var(--color-black);" data-i18n="story_title">THE STORY OF GO!</h2>
+
+      <div class="timeline-container">
+        <div class="timeline-card">
+          <div class="timeline-step">01</div>
+          <div class="timeline-content">
+            <h3 data-i18n="story_step1_title">THE 2-YEAR ALBUM R&D PROCESS</h3>
+            <p data-i18n="story_step1_desc">
+              BIGHIT MUSIC developed the album <em>COLOR OUTSIDE THE LINES</em> through a rigorous two-year creative journey. During this period, more than 300 candidate demo tracks were written and evaluated by the members and production team before selecting the final five tracks.
+            </p>
+          </div>
+        </div>
+
+        <div class="timeline-card">
+          <div class="timeline-step">02</div>
+          <div class="timeline-content">
+            <h3 data-i18n="story_step2_title">CORTIS MEMBER PARTICIPATION</h3>
+            <p data-i18n="story_step2_desc">
+              Unlike traditional group formations, all five members of CORTIS actively took part in writing lyrics, crafting melodies, and creating the high-energy choreography for "GO!".
+            </p>
+          </div>
+        </div>
+
+        <div class="timeline-card">
+          <div class="timeline-step">03</div>
+          <div class="timeline-content">
+            <h3 data-i18n="story_step3_title">SONG MEANING & INTERPRETATION</h3>
+            <p data-i18n="story_step3_desc">
+              "GO!" stands as an explosive rally cry. It captures the decisive moment when doubts are discarded and momentum takes over—encouraging listeners to leap forward without hesitation.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 05 — INSIDE THE ALBUM
+         ========================================================================== -->
+    <section id="album">
+      <div class="section-tag" data-i18n="sec_05_tag">05 // DISCOGRAPHY</div>
+      <h2 class="title-h1" style="color: var(--color-yellow);" data-i18n="album_title">COLOR OUTSIDE THE LINES</h2>
+
+      <div class="album-hero-grid">
+        <div class="album-art-container">
+          <div style="text-align: center; padding: 2rem;">
+            <div class="font-anton" style="font-size: 3rem; color: var(--color-black); line-height: 0.9;">
+              COLOR<br>OUTSIDE<br>THE LINES
+            </div>
+            <div class="sticker sticker-blue" style="margin-top: 1.5rem;">DEBUT EP // 2025</div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="title-h2" style="margin-bottom: 1.5rem;" data-i18n="tracklist_heading">OFFICIAL TRACKLIST</h3>
+          <div class="tracklist-group">
+            <div class="track-row featured">
+              <div>
+                <span style="font-family: var(--font-mono); font-size: 0.8rem; margin-right: 0.5rem;">01.</span>
+                <span class="track-title">GO!</span>
+                <span class="sticker sticker-black" style="margin-left: 0.75rem; font-size: 0.65rem;">TITLE TRACK</span>
+              </div>
+              <span class="track-time">2:50</span>
+            </div>
+
+            <div class="track-row">
+              <div>
+                <span style="font-family: var(--font-mono); font-size: 0.8rem; margin-right: 0.5rem;">02.</span>
+                <span class="track-title">What You Want</span>
+              </div>
+              <span class="track-time">3:14</span>
+            </div>
+
+            <div class="track-row">
+              <div>
+                <span style="font-family: var(--font-mono); font-size: 0.8rem; margin-right: 0.5rem;">03.</span>
+                <span class="track-title">FaSHioN</span>
+              </div>
+              <span class="track-time">2:54</span>
+            </div>
+
+            <div class="track-row">
+              <div>
+                <span style="font-family: var(--font-mono); font-size: 0.8rem; margin-right: 0.5rem;">04.</span>
+                <span class="track-title">JoyRide</span>
+              </div>
+              <span class="track-time">2:37</span>
+            </div>
+
+            <div class="track-row">
+              <div>
+                <span style="font-family: var(--font-mono); font-size: 0.8rem; margin-right: 0.5rem;">05.</span>
+                <span class="track-title">Lullaby</span>
+              </div>
+              <span class="track-time">2:44</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 06 — DECODE THE SOUND (AUDIO VISUALIZER)
+         ========================================================================== -->
+    <section id="sound">
+      <div class="section-tag" data-i18n="sec_06_tag">06 // FREQUENCY ANALYSIS</div>
+      <h2 class="title-h1" style="color: var(--color-white);" data-i18n="sound_title">DECODE THE SOUND</h2>
+
+      <p style="font-size: 1.15rem; color: var(--color-light-gray); max-width: 700px; margin-top: 1rem;" data-i18n="sound_subtitle">
+        Real-time Web Audio API frequency visualizer processing the instrumental audio graph data.
+      </p>
+
+      <!-- Audio Reactive Visualizer Canvas -->
+      <div class="sound-visualizer-box">
+        <canvas id="visualizer-canvas"></canvas>
+      </div>
+
+      <div class="sound-breakdown-grid">
+        <div class="sound-card">
+          <h4 data-i18n="sound_card1_title">SUB-BASS 808s</h4>
+          <p style="font-size: 0.95rem; opacity: 0.85;" data-i18n="sound_card1_desc">
+            Deep, distorted 808 bass lines tuned to hit aggressively in live arenas and headphone setups.
+          </p>
+        </div>
+
+        <div class="sound-card">
+          <h4 data-i18n="sound_card2_title">SHARP SYNTH PLUCKS</h4>
+          <p style="font-size: 0.95rem; opacity: 0.85;" data-i18n="sound_card2_desc">
+            High-register lead synths with fast decay times creating rhythmic drive and urgency.
+          </p>
+        </div>
+
+        <div class="sound-card">
+          <h4 data-i18n="sound_card3_title">METALLIC HI-HATS</h4>
+          <p style="font-size: 0.95rem; opacity: 0.85;" data-i18n="sound_card3_desc">
+            Double-time trap rolls mixed with industrial percussive hits for kinetic momentum.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 07 — LYRICS BREAKDOWN
+         ========================================================================== -->
+    <section id="lyrics">
+      <div class="section-tag" style="color: var(--color-blue);" data-i18n="sec_07_tag">07 // LYRIC ANALYZER</div>
+      <h2 class="title-h1" style="color: var(--color-black);" data-i18n="lyrics_title">LYRICS BREAKDOWN</h2>
+
+      <div class="lyrics-container">
+        <!-- Segment Tabs -->
+        <div class="lyrics-nav" id="lyrics-nav">
+          <button class="lyric-segment-btn active" onclick="showLyricSegment('intro')">01. INTRO</button>
+          <button class="lyric-segment-btn" onclick="showLyricSegment('verse1')">02. VERSE 01</button>
+          <button class="lyric-segment-btn" onclick="showLyricSegment('prechorus')">03. PRE-CHORUS</button>
+          <button class="lyric-segment-btn" onclick="showLyricSegment('chorus')">04. CHORUS</button>
+          <button class="lyric-segment-btn" onclick="showLyricSegment('verse2')">05. VERSE 02</button>
+          <button class="lyric-segment-btn" onclick="showLyricSegment('outro')">06. OUTRO</button>
+        </div>
+
+        <!-- Lyrics Inspector Card -->
+        <div class="lyric-display-box">
+          <div class="sticker sticker-blue" id="lyric-segment-tag" style="margin-bottom: 1.5rem;">SECTION: INTRO</div>
+          <div class="lyric-excerpt" id="lyric-excerpt-text">
+            "Line set, ready to break the boundary..."
+          </div>
+          <div class="lyric-analysis-text" id="lyric-analysis-desc">
+            The track opens with a countdown atmosphere, signaling the immediate urge to abandon hesitation and step into action.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 08 — VISUAL ARCHIVE
+         ========================================================================== -->
+    <section id="archive">
+      <div class="section-tag" data-i18n="sec_08_tag">08 // MEDIA ARCHIVE</div>
+      <h2 class="title-h1" style="color: var(--color-yellow);" data-i18n="archive_title">VISUAL ARCHIVE</h2>
+
+      <div class="archive-video-grid">
+        <!-- Official Music Video Embed -->
+        <div class="video-card">
+          <div class="video-wrapper">
+            <iframe src="https://youtu.be/WXS-o57VJ5w?si=YbHJnGjQuEOFrC7h" title="CORTIS GO MV" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen id="mv-iframe"></iframe>
+          </div>
+          <h3 class="video-title">OFFICIAL MUSIC VIDEO</h3>
+          <p style="font-size: 0.95rem; opacity: 0.8;" data-i18n="mv_desc">
+            High-octane visual showcase directed with aggressive cuts and dynamic streetwear styling.
+          </p>
+        </div>
+
+        <!-- Behind The Scenes Video / Media -->
+        <div class="video-card">
+          <div class="video-wrapper">
+            <video controls id="bts-video" poster="https://placehold.co/800x450/174BE8/FFFFFF?text=CORTIS+GO!+BTS">
+              <source src="assets/video/videoplayback.mp4" type="video/mp4">
+              Your browser does not support HTML5 video.
+            </video>
+          </div>
+          <h3 class="video-title" data-i18n="bts_title">BEHIND THE SCENES</h3>
+          <p style="font-size: 0.95rem; opacity: 0.8;" data-i18n="bts_desc">
+            Exclusive studio sessions, dance rehearsal footage, and creative R&D clips.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 09 — CREDITS & OUTRO
+         ========================================================================== -->
+    <section id="credits">
+      <div class="section-tag" style="color: var(--color-blue);" data-i18n="sec_09_tag">09 // METADATA</div>
+      <h2 class="title-h1" style="color: var(--color-black);" data-i18n="credits_title">PRODUCTION CREDITS</h2>
+
+      <div class="credits-grid">
+        <div class="credit-group">
+          <h4>PERFORMING ARTISTS</h4>
+          <ul class="credit-list">
+            <li>MARTIN</li>
+            <li>JAMES</li>
+            <li>JUHOON</li>
+            <li>SEONGHYEON</li>
+            <li>KEONHO</li>
+          </ul>
+        </div>
+
+        <div class="credit-group">
+          <h4>SONGWRITERS & PRODUCERS</h4>
+          <ul class="credit-list">
+            <li>MARTIN (CORTIS)</li>
+            <li>JAMES (CORTIS)</li>
+            <li>JUHOON (CORTIS)</li>
+            <li>SEONGHYEON (CORTIS)</li>
+            <li>KEONHO (CORTIS)</li>
+            <li>BIGHIT MUSIC PRODUCERS</li>
+          </ul>
+        </div>
+
+        <div class="credit-group">
+          <h4>LABEL & DISTRIBUTION</h4>
+          <ul class="credit-list">
+            <li>BIGHIT MUSIC</li>
+            <li>HYBE LABELS</li>
+            <li>REPUBLIC RECORDS (USA)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="disclaimer-box">
+        <div>
+          <div style="font-weight: 700; margin-bottom: 0.25rem;">UNOFFICIAL FAN-MADE EXPERIMENTAL PROJECT</div>
+          <div style="opacity: 0.8;" data-i18n="disclaimer_text">
+            Designed for interactive showcase purposes celebrating CORTIS. All music & trademarks belong to BIGHIT MUSIC / HYBE.
+          </div>
+        </div>
+
+        <button class="replay-btn" onclick="scrollToTop()">
+          <i data-lucide="arrow-up"></i>
+          <span data-i18n="replay_btn">REPLAY EXPERIENCE</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       JAVASCRIPT ES MODULE ENGINE
+       ========================================================================== -->
+  <script type="module">
+    /* ==========================================================================
+       01. BILINGUAL CONTENT DICTIONARY
+       ========================================================================== */
+    const i18n = {
+      en: {
+        nav_about: "ABOUT",
+        nav_members: "MEMBERS",
+        nav_story: "STORY",
+        nav_album: "ALBUM",
+        nav_sound: "SOUND",
+        nav_lyrics: "LYRICS",
+        nav_archive: "ARCHIVE",
+        intro_tag: "BIGHIT MUSIC PRESENTS",
+        intro_enter_btn: "ENTER EXPERIENCE",
+        hero_subtitle: "DEBUT SINGLE // 2025",
+        hero_tag: "01 // VISUAL STATEMENT",
+        hero_headline: "THINK DIFFERENT. MOVE DIFFERENT.",
+        hero_desc: "\"GO!\" is not just a song; it is CORTIS's musical manifesto. Driven by raw energy, sharp synths, and heavy sub-bass, it signals an uninhibited push past conventional artistic boundaries.",
+        hero_genre_desc: "Pounding 808 bass, metallic percussive textures, and high-energy chant hooks designed for maximum athletic performance and street culture expression.",
+        sec_02_tag: "02 // GROUP IDENTITY",
+        meet_title: "MEET CORTIS",
+        manifesto_quote: "\"COLOR OUTSIDE THE LINES\"",
+        manifesto_desc: "The name CORTIS is derived from six letters taken directly from the phrase \"Color Outside the Lines\". Formed under BIGHIT MUSIC in 2025, the group symbolizes a commitment to free creative expression, unconstrained by societal standards or rigid industry templates.",
+        group_philosophy_title: "THE FIVE-MEMBER CREATIVE ENGINE",
+        group_philosophy_desc: "Composed of MARTIN, JAMES, JUHOON, SEONGHYEON, and KEONHO, CORTIS represents a self-driven generation of artists who write, produce, and choreograph their own material.",
+        sec_03_tag: "03 // MEMBER PROFILES",
+        members_title: "THE CREATORS",
+        stat_hometown: "HOMETOWN",
+        stat_height: "HEIGHT",
+        stat_credits: "ALBUM CREDITS",
+        stat_specialty: "SPECIALTY",
+        sec_04_tag: "04 // CREATIVE JOURNEY",
+        story_title: "THE STORY OF GO!",
+        story_step1_title: "THE 2-YEAR ALBUM R&D PROCESS",
+        story_step1_desc: "BIGHIT MUSIC developed the album COLOR OUTSIDE THE LINES through a rigorous two-year creative journey. During this period, more than 300 candidate demo tracks were written and evaluated before selecting the final five tracks.",
+        story_step2_title: "CORTIS MEMBER PARTICIPATION",
+        story_step2_desc: "Unlike traditional group formations, all five members of CORTIS actively took part in writing lyrics, crafting melodies, and creating the high-energy choreography for \"GO!\".",
+        story_step3_title: "SONG MEANING & INTERPRETATION",
+        story_step3_desc: "\"GO!\" stands as an explosive rally cry. It captures the decisive moment when doubts are discarded and momentum takes over—encouraging listeners to leap forward without hesitation.",
+        sec_05_tag: "05 // DISCOGRAPHY",
+        album_title: "COLOR OUTSIDE THE LINES",
+        tracklist_heading: "OFFICIAL TRACKLIST",
+        sec_06_tag: "06 // FREQUENCY ANALYSIS",
+        sound_title: "DECODE THE SOUND",
+        sound_subtitle: "Real-time Web Audio API frequency visualizer processing the instrumental audio graph data.",
+        sound_card1_title: "SUB-BASS 808s",
+        sound_card1_desc: "Deep, distorted 808 bass lines tuned to hit aggressively in live arenas and headphone setups.",
+        sound_card2_title: "SHARP SYNTH PLUCKS",
+        sound_card2_desc: "High-register lead synths with fast decay times creating rhythmic drive and urgency.",
+        sound_card3_title: "METALLIC HI-HATS",
+        sound_card3_desc: "Double-time trap rolls mixed with industrial percussive hits for kinetic momentum.",
+        sec_07_tag: "07 // LYRIC ANALYZER",
+        lyrics_title: "LYRICS BREAKDOWN",
+        sec_08_tag: "08 // MEDIA ARCHIVE",
+        archive_title: "VISUAL ARCHIVE",
+        mv_desc: "High-octane visual showcase directed with aggressive cuts and dynamic streetwear styling.",
+        bts_title: "BEHIND THE SCENES",
+        bts_desc: "Exclusive studio sessions, dance rehearsal footage, and creative R&D clips.",
+        sec_09_tag: "09 // METADATA",
+        credits_title: "PRODUCTION CREDITS",
+        disclaimer_text: "Designed for interactive showcase purposes celebrating CORTIS. All music & trademarks belong to BIGHIT MUSIC / HYBE.",
+        replay_btn: "REPLAY EXPERIENCE"
+      },
+      id: {
+        nav_about: "TENTANG",
+        nav_members: "ANGGOTA",
+        nav_story: "CERITA",
+        nav_album: "ALBUM",
+        nav_sound: "MUSIK",
+        nav_lyrics: "LIRIK",
+        nav_archive: "ARSIP",
+        intro_tag: "BIGHIT MUSIC MEMPERSEMBAHKAN",
+        intro_enter_btn: "MASUK PENGALAMAN",
+        hero_subtitle: "SINGLE DEBUT // 2025",
+        hero_tag: "01 // PERNYATAAN VISUAL",
+        hero_headline: "BERPIKIR BEDA. BERGERAK BEDA.",
+        hero_desc: "\"GO!\" bukan sekadar lagu; ini adalah manifesto musik CORTIS. Didorong energi mentah, synth tajam, dan sub-bass berat, menandai dorongan tanpa batas melampaui batasan artistik konvensional.",
+        hero_genre_desc: "Bass 808 menggelegar, tekstur perkusi metalik, dan kait sorakan berenergi tinggi untuk ekspresi budaya streetwear.",
+        sec_02_tag: "02 // IDENTITAS GRUP",
+        meet_title: "MENGENAL CORTIS",
+        manifesto_quote: "\"COLOR OUTSIDE THE LINES\"",
+        manifesto_desc: "Nama CORTIS diambil dari enam huruf dalam frasa \"Color Outside the Lines\". Dibentuk di bawah BIGHIT MUSIC pada 2025, grup ini menyimbolkan komitmen pada kebebasan berekspresi tanpa terikat norma masyarakat.",
+        group_philosophy_title: "MESIN KREATIF LIMA ANGGOTA",
+        group_philosophy_desc: "Terdiri dari MARTIN, JAMES, JUHOON, SEONGHYEON, dan KEONHO, CORTIS mewakili generasi seniman independen yang menulis, memproduksi, dan merancang koreografi mereka sendiri.",
+        sec_03_tag: "03 // PROFIL ANGGOTA",
+        members_title: "PARA KREATOR",
+        stat_hometown: "KOTA ASAL",
+        stat_height: "TINGGI BADAN",
+        stat_credits: "KREDIT ALBUM",
+        stat_specialty: "KEAHLIAN",
+        sec_04_tag: "04 // PERJALANAN KREATIF",
+        story_title: "KISAH DI BALIK GO!",
+        story_step1_title: "PROSES R&D ALBUM 2 TAHUN",
+        story_step1_desc: "BIGHIT MUSIC mengembangkan album COLOR OUTSIDE THE LINES melalui perjalanan kreatif dua tahun. Selama periode ini, lebih dari 300 lagu demo ditulis dan dievaluasi sebelum memilih lima lagu final.",
+        story_step2_title: "PARTISIPASI ANGGOTA CORTIS",
+        story_step2_desc: "Berbeda dengan grup tradisional, kelima anggota CORTIS aktif berpartisipasi menulis lirik, melodi, dan merancang koreografi enerjik untuk \"GO!\".",
+        story_step3_title: "MAKNA & INTERPRETASI LAGU",
+        story_step3_desc: "\"GO!\" adalah seruan semangat eksplosif. Menangkap momen krusial saat keraguan dibuang dan momentum mengambil alih—mendorong pendengar untuk melangkah tanpa ragu.",
+        sec_05_tag: "05 // DISKOGRAFI",
+        album_title: "COLOR OUTSIDE THE LINES",
+        tracklist_heading: "DAFTAR LAGU RESMI",
+        sec_06_tag: "06 // ANALISIS FREKUENSI",
+        sound_title: "BEDAH SUARA",
+        sound_subtitle: "Visualizer frekuensi Web Audio API waktu-nyata memproses data grafik audio instrumental.",
+        sound_card1_title: "SUB-BASS 808",
+        sound_card1_desc: "Garis bass 808 terdistorsi yang dirancang agresif untuk arena konser dan headphone.",
+        sound_card2_title: "SYNTH PLUCK TAJAM",
+        sound_card2_desc: "Synth utama nada tinggi dengan decay cepat menciptakan ritme dinamis dan mendesak.",
+        sound_card3_title: "HI-HAT METALIK",
+        sound_card3_desc: "Gulungan trap ritme ganda dipadu ketukan perkusi industrial untuk momentum kinetik.",
+        sec_07_tag: "07 // ANALISIS LIRIK",
+        lyrics_title: "BEDAH LIRIK",
+        sec_08_tag: "08 // ARSIP MEDIA",
+        archive_title: "ARSIP VISUAL",
+        mv_desc: "Karya visual tinggi energi dengan pemotongan adegan cepat dan gaya streetwear dinamis.",
+        bts_title: "DI BALIK LAYAR",
+        bts_desc: "Sesi studio eksklusif, rekaman latihan koreografi, dan klip R&D kreatif.",
+        sec_09_tag: "09 // METADATA",
+        credits_title: "KREDIT PRODUKSI",
+        disclaimer_text: "Dirancang untuk eksperimen interaktif merayakan CORTIS. Hak cipta musik & merek dagang milik BIGHIT MUSIC / HYBE.",
+        replay_btn: "ULANGI PENGALAMAN"
+      }
+    };
+
+    let currentLang = 'en';
+
+    window.switchLanguage = function(lang) {
+      currentLang = lang;
+      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`lang-${lang}`).classList.add('active');
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18n[lang][key]) {
+          el.innerText = i18n[lang][key];
+        }
+      });
+    };
+
+    /* ==========================================================================
+       02. MEMBER DATA & INTERACTIVE GALLERY
+       ========================================================================== */
+    const membersData = {
+      martin: {
+        name: "MARTIN",
+        role: "LEADER // PRODUCER",
+        bio: "Leader of CORTIS. Born in Songpa-gu, Seoul. Formerly part of the 2018 PyeongChang Winter Olympics children's choir. Participated in songwriting and production for 'GO!', 'JoyRide', and 'Lullaby'.",
+        hometown: "Seoul, South Korea",
+        height: "190.5 cm (6'3\")",
+        credits: "GO!, JoyRide, Lullaby",
+        specialty: "Vocal Arranging & Trap Beats",
+        bgHex: "#F5E900"
+      },
+      james: {
+        name: "JAMES",
+        role: "PRODUCER // CHOREOGRAPHER",
+        bio: "Chao Yufan. Multilingual artist born in Hong Kong of Thai and Chinese descent. Former Trainee A member. Produced tracks for TXT and ILLIT ('Magnetic'). Contributed to 'GO!', 'What You Want', 'FaSHioN', and 'JoyRide'.",
+        hometown: "Hong Kong / Thailand",
+        height: "183 cm",
+        credits: "GO!, What You Want, FaSHioN",
+        specialty: "Multilingual Rap & Choreography",
+        bgHex: "#174BE8"
+      },
+      juhoon: {
+        name: "JUHOON",
+        role: "VOCAL // PERFORMANCE",
+        bio: "Kim Ju-hoon. Born in Seoul. Former child model and youth basketball player. Joined BIGHIT MUSIC after passing auditions. Co-wrote and contributed choreography for 'GO!'.",
+        hometown: "Seoul, South Korea",
+        height: "181 cm",
+        credits: "GO!, What You Want, FaSHioN",
+        specialty: "Dynamic Vocals & Rhythm",
+        bgHex: "#FFFFFF"
+      },
+      seonghyeon: {
+        name: "SEONGHYEON",
+        role: "WRITER // PRODUCER",
+        bio: "Eom Seong-hyeon. Born in Daejeon. Trained for 5 years with over 100 self-produced trainee tracks. Skateboarder and avid music collector. Contributed to all 5 songs on COLOR OUTSIDE THE LINES.",
+        hometown: "Daejeon, South Korea",
+        height: "179 cm",
+        credits: "All 5 EP Tracks",
+        specialty: "Audio Engineering & Riffs",
+        bgHex: "#F5E900"
+      },
+      keonho: {
+        name: "KEONHO",
+        role: "VOCAL // PERFORMANCE",
+        bio: "An Keon-ho. Born in Suwon. Top-ranked competitive swimmer during youth. Joined BIGHIT MUSIC in 2021. Co-wrote 'GO!' and contributed key choreography sequences.",
+        hometown: "Suwon, South Korea",
+        height: "180 cm",
+        credits: "GO!, What You Want, JoyRide",
+        specialty: "Agile Movement & Harmonies",
+        bgHex: "#174BE8"
+      }
+    };
+
+    window.showMember = function(memberKey) {
+      const data = membersData[memberKey];
+      if (!data) return;
+
+      document.querySelectorAll('.member-tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      document.getElementById('member-display-name').innerText = data.name;
+      document.getElementById('member-role-sticker').innerText = data.role;
+      document.getElementById('member-display-bio').innerText = data.bio;
+      document.getElementById('member-val-hometown').innerText = data.hometown;
+      document.getElementById('member-val-height').innerText = data.height;
+      document.getElementById('member-val-credits').innerText = data.credits;
+      document.getElementById('member-val-specialty').innerText = data.specialty;
+
+      // Render Dynamic SVG Graphic Silhouette
+      const portraitSvg = document.getElementById('member-svg-portrait');
+      portraitSvg.innerHTML = `
+        <rect width="100%" height="100%" fill="${data.bgHex}" />
+        <circle cx="200" cy="180" r="100" fill="#111111" opacity="0.85"/>
+        <path d="M 80 480 Q 200 300 320 480 Z" fill="#111111" />
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Anton" font-size="70" fill="#FFFFFF" opacity="0.25">
+          ${data.name}
+        </text>
+      `;
+    };
+
+    /* ==========================================================================
+       03. LYRICS ANALYSIS SEGMENT SWITCHER
+       ========================================================================== */
+    const lyricsData = {
+      intro: {
+        tag: "SECTION 01 // INTRO",
+        excerpt: "\"Engine roaring, green light flashed... line set to break the boundary.\"",
+        analysis: "Establishes immediate momentum. Paraphrased around the urgency of stepping forward the instant the light turns green without second-guessing."
+      },
+      verse1: {
+        tag: "SECTION 02 // VERSE 01",
+        excerpt: "\"Heavy steps on the asphalt, sub-bass rattling through the floor.\"",
+        analysis: "Focuses on physical presence and confidence. Street-culture imagery emphasizes grounded determination and relentless pacing."
+      },
+      prechorus: {
+        tag: "SECTION 03 // PRE-CHORUS",
+        excerpt: "\"Hear the countdown ticking down... 3, 2, 1, no holding back.\"",
+        analysis: "Building tension through rhythmic acceleration, preparing the listener for the explosive main chorus section."
+      },
+      chorus: {
+        tag: "SECTION 04 // CHORUS",
+        excerpt: "\"GO! GO! Color outside the lines! Move different, think different!\"",
+        analysis: "The central core slogan. High-octane group chant encouraging complete freedom from rigid social expectations."
+      },
+      verse2: {
+        tag: "SECTION 05 // VERSE 02",
+        excerpt: "\"Crafting the blueprint, 300 tracks in the vault, we define the wave.\"",
+        analysis: "Self-referential verse touching upon their intense two-year preparation journey and artistic autonomy."
+      },
+      outro: {
+        tag: "SECTION 06 // OUTRO",
+        excerpt: "\"Nothing stays the same. CORTIS moving forward. GO!\"",
+        analysis: "A lingering synth echo fade-out reinforcing sustained momentum and future vision."
+      }
+    };
+
+    window.showLyricSegment = function(segKey) {
+      const seg = lyricsData[segKey];
+      if (!seg) return;
+
+      document.querySelectorAll('.lyric-segment-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      document.getElementById('lyric-segment-tag').innerText = seg.tag;
+      document.getElementById('lyric-excerpt-text').innerText = seg.excerpt;
+      document.getElementById('lyric-analysis-desc').innerText = seg.analysis;
+    };
+
+    /* ==========================================================================
+       04. WEB AUDIO API ENGINE & PROCEDURAL SYNTHESIZER
+       ========================================================================== */
+    let audioCtx = null;
+    let audioElement = null;
+    let audioSourceNode = null;
+    let gainNode = null;
+    let filterNode = null;
+    let analyserNode = null;
+    let isPlaying = false;
+    let isProceduralMode = false;
+    let synthInterval = null;
+
+    function initAudioEngine() {
+      if (audioCtx) return;
+
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+
+      // Create Nodes
+      gainNode = audioCtx.createGain();
+      filterNode = audioCtx.createBiquadFilter();
+      analyserNode = audioCtx.createAnalyser();
+
+      analyserNode.fftSize = 128;
+      filterNode.type = 'lowpass';
+      filterNode.frequency.setValueAtTime(20000, audioCtx.currentTime);
+
+      // Connect Nodes
+      filterNode.connect(gainNode);
+      gainNode.connect(analyserNode);
+      analyserNode.connect(audioCtx.destination);
+
+      // Create Audio Element
+      audioElement = new Audio("assets/audio/CORTIS – GO! Instrumental.mp3");
+      audioElement.crossOrigin = "anonymous";
+      audioElement.loop = true;
+
+      // Catch error if local file is missing and fallback to Procedural Web Audio Synth!
+      audioElement.addEventListener('error', () => {
+        console.warn("Local audio file not found. Switching to Web Audio API Procedural Synth!");
+        isProceduralMode = true;
+      });
+
+      audioSourceNode = audioCtx.createMediaElementSource(audioElement);
+      audioSourceNode.connect(filterNode);
+    }
+
+    // Procedural Trap / Synth Beat Generator for immediate audio feedback
+    function triggerProceduralBeat() {
+      if (!isProceduralMode || !isPlaying || !audioCtx) return;
+
+      let step = 0;
+      synthInterval = setInterval(() => {
+        if (!isPlaying) return;
+        const now = audioCtx.currentTime;
+
+        // Kick Drum & 808 Bass (Steps 0, 4, 8, 12)
+        if (step % 4 === 0) {
+          const osc = audioCtx.createOscillator();
+          const oscGain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(120, now);
+          osc.frequency.exponentialRampToValueAtTime(35, now + 0.15);
+          oscGain.gain.setValueAtTime(1, now);
+          oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+          osc.connect(oscGain);
+          oscGain.connect(filterNode);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        }
+
+        // Snare / Rimshot (Steps 4, 12)
+        if (step % 8 === 4) {
+          const osc = audioCtx.createOscillator();
+          const oscGain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(280, now);
+          oscGain.gain.setValueAtTime(0.7, now);
+          oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+          osc.connect(oscGain);
+          oscGain.connect(filterNode);
+          osc.start(now);
+          osc.stop(now + 0.15);
+        }
+
+        // Metallic Hi-Hat (Every 2 steps)
+        if (step % 2 === 0) {
+          const osc = audioCtx.createOscillator();
+          const oscGain = audioCtx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(8000, now);
+          oscGain.gain.setValueAtTime(0.2, now);
+          oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+          osc.connect(oscGain);
+          oscGain.connect(filterNode);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        }
+
+        step = (step + 1) % 16;
+      }, 150); // ~140 BPM
+    }
+
+    function toggleAudio() {
+      initAudioEngine();
+
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      const widget = document.getElementById('audio-widget');
+      const icon = document.getElementById('audio-icon');
+
+      if (!isPlaying) {
+        if (!isProceduralMode) {
+          audioElement.play().then(() => {
+            isPlaying = true;
+            widget.classList.add('playing');
+            lucide.createIcons();
+          }).catch(err => {
+            console.warn("Autoplay blocked or file missing. Fallback to procedural synth.", err);
+            isProceduralMode = true;
+            isPlaying = true;
+            widget.classList.add('playing');
+            triggerProceduralBeat();
+          });
+        } else {
+          isPlaying = true;
+          widget.classList.add('playing');
+          triggerProceduralBeat();
+        }
+      } else {
+        isPlaying = false;
+        widget.classList.remove('playing');
+        if (!isProceduralMode) {
+          audioElement.pause();
+        }
+        if (synthInterval) clearInterval(synthInterval);
+      }
+    }
+
+    document.getElementById('audio-toggle-btn').addEventListener('click', toggleAudio);
+
+    // Custom MP3 File Loader Handler
+    document.getElementById('custom-audio-file').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        initAudioEngine();
+        const fileUrl = URL.createObjectURL(file);
+        audioElement.src = fileUrl;
+        isProceduralMode = false;
+        if (synthInterval) clearInterval(synthInterval);
+        audioElement.play();
+        isPlaying = true;
+        document.getElementById('audio-widget').classList.add('playing');
+      }
+    });
+
+    // Section Audio Preset Automation via Web Audio API
+    function applyAudioPreset(presetName, cutoffFreq) {
+      document.getElementById('audio-preset-label').innerText = `PRESET: ${presetName}`;
+      if (filterNode && audioCtx) {
+        filterNode.frequency.setTargetAtTime(cutoffFreq, audioCtx.currentTime, 0.3);
+      }
+    }
+
+    /* ==========================================================================
+       05. REAL-TIME CANVAS VISUALIZER
+       ========================================================================== */
+    const canvas = document.getElementById('visualizer-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function drawVisualizer() {
+      requestAnimationFrame(drawVisualizer);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const bufferLength = analyserNode ? analyserNode.frequencyBinCount : 32;
+      const dataArray = new Uint8Array(bufferLength);
+
+      if (analyserNode && isPlaying) {
+        analyserNode.getByteFrequencyData(dataArray);
+      } else {
+        // Subtle ambient idle wave
+        for (let i = 0; i < bufferLength; i++) {
+          dataArray[i] = Math.sin(Date.now() * 0.003 + i) * 20 + 25;
+        }
+      }
+
+      const barWidth = (canvas.width / bufferLength) * 1.5;
+      let x = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        const barHeight = (dataArray[i] / 255) * canvas.height * 0.85;
+
+        // Alternate colors based on streetwear theme
+        ctx.fillStyle = i % 2 === 0 ? '#F5E900' : '#174BE8';
+        ctx.fillRect(x, canvas.height - barHeight, barWidth - 4, barHeight);
+
+        x += barWidth;
+      }
+    }
+    drawVisualizer();
+
+    /* ==========================================================================
+       06. BTS VIDEO AUDIO DUCKING & INTEGRATION
+       ========================================================================== */
+    const btsVideo = document.getElementById('bts-video');
+
+    if (btsVideo) {
+      btsVideo.addEventListener('play', () => {
+        if (isPlaying && audioElement && !isProceduralMode) {
+          // Smoothly duck background audio
+          gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.4);
+        }
+      });
+
+      btsVideo.addEventListener('pause', () => {
+        if (isPlaying && gainNode) {
+          gainNode.gain.setTargetAtTime(1, audioCtx.currentTime, 0.4);
+        }
+      });
+
+      btsVideo.addEventListener('ended', () => {
+        if (isPlaying && gainNode) {
+          gainNode.gain.setTargetAtTime(1, audioCtx.currentTime, 0.4);
+        }
+      });
+    }
+
+    /* ==========================================================================
+       07. GSAP SCROLLTRIGGER & LENIS SMOOTH SCROLLING
+       ========================================================================== */
+    gsap.registerPlugin(ScrollTrigger);
+
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smooth: true
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    lenis.on('scroll', ScrollTrigger.update);
+
+    // Section Audio Presets Triggered by Scroll Position
+    const sectionsAudioPresets = [
+      { id: 'hero', name: 'HERO', freq: 20000 },
+      { id: 'meet-cortis', name: 'MANIFESTO', freq: 12000 },
+      { id: 'members', name: 'MEMBERS', freq: 16000 },
+      { id: 'story', name: 'STORY', freq: 8000 },
+      { id: 'album', name: 'ALBUM', freq: 18000 },
+      { id: 'sound', name: 'DECODE', freq: 22000 },
+      { id: 'lyrics', name: 'LYRICS', freq: 6000 },
+      { id: 'archive', name: 'ARCHIVE', freq: 15000 },
+      { id: 'credits', name: 'OUTRO', freq: 20000 }
+    ];
+
+    sectionsAudioPresets.forEach(sec => {
+      ScrollTrigger.create({
+        trigger: `#${sec.id}`,
+        start: 'top 50%',
+        onEnter: () => applyAudioPreset(sec.name, sec.freq),
+        onEnterBack: () => applyAudioPreset(sec.name, sec.freq)
+      });
+    });
+
+    // Intro Experience Button Trigger
+    document.getElementById('enter-experience-btn').addEventListener('click', () => {
+      toggleAudio(); // Unlock Web Audio context
+
+      gsap.to('#intro-screen', {
+        yPercent: -100,
+        duration: 1,
+        ease: 'power4.inOut',
+        onComplete: () => {
+          document.getElementById('intro-screen').style.display = 'none';
+        }
+      });
+    });
+
+    // Replay Scroll Top Function
+    window.scrollToTop = function() {
+      lenis.scrollTo(0);
+    };
+
+    /* ==========================================================================
+       08. CUSTOM CURSOR MOTION & INITIALIZATION
+       ========================================================================== */
+    const cursor = document.getElementById('cursor');
+    window.addEventListener('mousemove', (e) => {
+      gsap.to(cursor, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 0.15,
+        ease: 'power2.out'
+      });
+    });
+
+    document.querySelectorAll('button, a, input, .track-row').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+    });
+
+    // Initial Member Load
+    showMember('martin');
+    showLyricSegment('intro');
+    lucide.createIcons();
+  </script>
+</body>
+</html>
