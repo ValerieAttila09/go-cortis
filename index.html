@@ -25,8 +25,8 @@
       --color-blue: #174BE8;
       --color-white: #FFFFFF;
       --color-black: #111111;
-      --color-dark-gray: #1E1E1E;
-      --color-mid-gray: #2D2D2D;
+      --color-dark-gray: #181818;
+      --color-mid-gray: #262626;
       --color-light-gray: #E0E0E0;
 
       --font-display-anton: 'Anton', sans-serif;
@@ -53,8 +53,6 @@
       color: var(--color-white);
       font-family: var(--font-body);
       overflow-x: hidden;
-      selection-background-color: var(--color-yellow);
-      selection-color: var(--color-black);
     }
 
     ::selection {
@@ -64,7 +62,7 @@
 
     body {
       overflow-x: hidden;
-      width: 100vw;
+      width: 100%;
       min-height: 100vh;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
@@ -100,35 +98,64 @@
       height: 100vh;
       pointer-events: none;
       z-index: 9999;
-      opacity: 0.035;
-      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Scanline Streetwear Texture */
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+      background-size: 100% 4px;
+      z-index: 9998;
+      pointer-events: none;
+      opacity: 0.3;
     }
 
     /* ==========================================================================
-       03. CUSTOM CURSOR
+       03. ENHANCED ADVANCED CUSTOM CURSOR
        ========================================================================== */
     .custom-cursor {
       position: fixed;
       top: 0;
       left: 0;
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       background-color: var(--color-yellow);
       mix-blend-mode: difference;
       pointer-events: none;
       z-index: 10000;
       transform: translate(-50%, -50%);
-      transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+      transition: width 0.25s var(--ease-out-expo), height 0.25s var(--ease-out-expo), background-color 0.25s ease, border-radius 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cursor-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--color-black);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .custom-cursor.hovered {
-      width: 50px;
-      height: 50px;
-      background-color: var(--color-blue);
+      width: 64px;
+      height: 64px;
+      background-color: var(--color-yellow);
+      mix-blend-mode: normal;
+      box-shadow: 0 0 20px rgba(245, 233, 0, 0.6);
+    }
+    .custom-cursor.hovered .cursor-label {
+      opacity: 1;
     }
 
-    /* Hide cursor on touch devices */
     @media (pointer: coarse) {
       .custom-cursor { display: none !important; }
     }
@@ -150,10 +177,10 @@
     .font-archivo { font-family: var(--font-display-archivo); text-transform: uppercase; }
     .font-mono { font-family: var(--font-mono); }
 
-    /* Sticker Badges */
+    /* Interactive Sticker Badges with Tilt & Shadow */
     .sticker {
       display: inline-block;
-      padding: 0.35rem 0.85rem;
+      padding: 0.4rem 0.95rem;
       font-family: var(--font-mono);
       font-weight: 700;
       font-size: 0.75rem;
@@ -163,10 +190,16 @@
       box-shadow: 4px 4px 0px var(--color-black);
       transform: rotate(-2deg);
       user-select: none;
+      transition: transform 0.25s var(--ease-out-expo), box-shadow 0.25s ease;
+    }
+    .sticker:hover {
+      transform: rotate(1deg) scale(1.05);
+      box-shadow: 6px 6px 0px var(--color-black);
     }
     .sticker-yellow { background: var(--color-yellow); color: var(--color-black); }
     .sticker-blue { background: var(--color-blue); color: var(--color-white); }
     .sticker-white { background: var(--color-white); color: var(--color-black); }
+    .sticker-black { background: var(--color-black); color: var(--color-yellow); border-color: var(--color-yellow); }
 
     /* Brutalist Tape Effect */
     .tape-accent {
@@ -175,14 +208,15 @@
     .tape-accent::before {
       content: '';
       position: absolute;
-      top: -10px;
+      top: -12px;
       left: 20px;
-      width: 70px;
-      height: 24px;
-      background: rgba(245, 233, 0, 0.75);
-      transform: rotate(-6deg);
-      z-index: 2;
+      width: 80px;
+      height: 26px;
+      background: rgba(245, 233, 0, 0.85);
+      transform: rotate(-5deg);
+      z-index: 4;
       pointer-events: none;
+      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
     }
 
     /* Infinite Marquee */
@@ -193,13 +227,15 @@
       display: flex;
       background: var(--color-yellow);
       color: var(--color-black);
-      padding: 0.75rem 0;
+      padding: 0.85rem 0;
       border-top: 3px solid var(--color-black);
       border-bottom: 3px solid var(--color-black);
+      position: relative;
+      z-index: 5;
     }
     .marquee-content {
       display: flex;
-      animation: marquee 20s linear infinite;
+      animation: marquee 18s linear infinite;
     }
     .marquee-item {
       font-family: var(--font-display-anton);
@@ -208,13 +244,14 @@
       display: flex;
       align-items: center;
       gap: 1.5rem;
+      letter-spacing: 0.02em;
     }
     @keyframes marquee {
       0% { transform: translateX(0%); }
       100% { transform: translateX(-50%); }
     }
 
-    /* Section Label Badge */
+    /* Section Label Badge with Kinetic Indicator */
     .section-tag {
       display: flex;
       align-items: center;
@@ -222,7 +259,7 @@
       font-family: var(--font-mono);
       font-size: 0.85rem;
       font-weight: 600;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--color-yellow);
       margin-bottom: 1.5rem;
@@ -230,30 +267,46 @@
     .section-tag::before {
       content: '';
       display: inline-block;
-      width: 12px;
-      height: 12px;
-      background-color: var(--color-yellow);
+      width: 14px;
+      height: 14px;
+      background-color: currentColor;
       clip-path: polygon(100% 50%, 0 0, 0 100%);
+      animation: pulseTriangle 1.5s infinite alternate ease-in-out;
+    }
+    @keyframes pulseTriangle {
+      0% { transform: scale(0.85); opacity: 0.7; }
+      100% { transform: scale(1.15); opacity: 1; }
+    }
+
+    /* Kinetic Text Mask Wrappers for GSAP Reveals */
+    .gsap-reveal-wrapper {
+      overflow: hidden;
+      display: block;
+    }
+    .gsap-reveal-target {
+      display: block;
+      will-change: transform, opacity;
     }
 
     /* Responsive Clamp Typography */
     .display-giant {
       font-family: var(--font-display-anton);
-      font-size: clamp(4.5rem, 15vw, 18rem);
-      line-height: 0.85;
+      font-size: clamp(5rem, 24vw, 22rem);
+      line-height: 0.78;
       text-transform: uppercase;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
     }
     .title-h1 {
       font-family: var(--font-display-archivo);
-      font-size: clamp(2.5rem, 6vw, 6rem);
-      line-height: 0.95;
+      font-size: clamp(2.5rem, 6.5vw, 6.5rem);
+      line-height: 0.92;
       text-transform: uppercase;
+      letter-spacing: -0.02em;
     }
     .title-h2 {
       font-family: var(--font-display-archivo);
-      font-size: clamp(1.8rem, 4vw, 3.5rem);
-      line-height: 1.05;
+      font-size: clamp(1.8rem, 4.5vw, 3.8rem);
+      line-height: 1.02;
       text-transform: uppercase;
     }
 
@@ -265,7 +318,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      padding: 1.25rem 2rem;
+      padding: 1.25rem 2.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -275,30 +328,48 @@
 
     .nav-brand {
       font-family: var(--font-display-anton);
-      font-size: 1.8rem;
+      font-size: 2rem;
       letter-spacing: 0.05em;
       color: var(--color-white);
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      transition: transform 0.2s ease;
+    }
+    .nav-brand:hover {
+      transform: scale(1.04);
     }
 
     .nav-links {
       display: flex;
-      gap: 1.75rem;
+      gap: 2rem;
       align-items: center;
       list-style: none;
+    }
+
+    .nav-menu-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+      padding: 0.5rem 0.75rem;
+      border: 2px solid var(--color-white);
+      color: var(--color-white);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
     }
 
     .nav-link {
       font-family: var(--font-mono);
       font-size: 0.8rem;
       font-weight: 600;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--color-white);
       position: relative;
-      padding: 0.2rem 0;
+      padding: 0.3rem 0;
       transition: color 0.2s ease;
     }
     .nav-link::after {
@@ -317,27 +388,50 @@
     .lang-switcher {
       display: flex;
       align-items: center;
-      border: 1.5px solid var(--color-white);
+      border: 2px solid var(--color-white);
       border-radius: 999px;
-      padding: 2px;
-      background: rgba(0,0,0,0.4);
+      padding: 3px;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
     }
     .lang-btn {
-      padding: 0.25rem 0.65rem;
+      padding: 0.25rem 0.75rem;
       font-family: var(--font-mono);
       font-size: 0.75rem;
       font-weight: 700;
       border-radius: 999px;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
     }
     .lang-btn.active {
       background-color: var(--color-yellow);
       color: var(--color-black);
     }
 
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .nav-bar { padding: 1rem; }
+    @media (max-width: 900px) {
+      .nav-bar { padding: 0.75rem 1.25rem; }
+      .nav-menu-toggle { display: inline-flex; }
+      .nav-bar.menu-open { mix-blend-mode: normal; }
+      .nav-links {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        left: 1rem;
+        right: 1rem;
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 0.5rem 1rem;
+        background: var(--color-black);
+        border: 2px solid var(--color-yellow);
+        box-shadow: 6px 6px 0 var(--color-blue);
+      }
+      .nav-bar.menu-open .nav-links { display: flex; }
+      .nav-links li + li { border-top: 1px solid rgba(255,255,255,0.18); }
+      .nav-link {
+        display: block;
+        padding: 0.85rem 0;
+        font-size: 0.85rem;
+      }
     }
 
     /* ==========================================================================
@@ -350,27 +444,34 @@
       z-index: 1000;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.85rem;
       background: var(--color-black);
       border: 2px solid var(--color-yellow);
-      padding: 0.6rem 1.1rem;
+      padding: 0.65rem 1.25rem;
       box-shadow: 6px 6px 0px var(--color-blue);
       border-radius: 4px;
-      transition: transform 0.3s var(--ease-out-expo);
+      transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s ease;
+    }
+    .audio-widget:hover {
+      transform: translateY(-2px);
+      box-shadow: 8px 8px 0px var(--color-yellow);
     }
 
     .audio-play-btn {
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background: var(--color-yellow);
       color: var(--color-black);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, background 0.2s ease;
     }
-    .audio-play-btn:hover { transform: scale(1.1); }
+    .audio-play-btn:hover {
+      transform: scale(1.1);
+      background: var(--color-white);
+    }
 
     .audio-info {
       display: flex;
@@ -387,14 +488,15 @@
       font-size: 0.65rem;
       color: var(--color-yellow);
       letter-spacing: 0.05em;
+      margin-top: 2px;
     }
 
     .audio-vis-mini {
       display: flex;
       align-items: flex-end;
       gap: 3px;
-      height: 18px;
-      width: 24px;
+      height: 20px;
+      width: 26px;
     }
     .audio-bar {
       flex: 1;
@@ -414,15 +516,15 @@
       100% { height: 100%; }
     }
 
-    /* Custom File Input Trigger */
     .audio-upload-btn {
       font-family: var(--font-mono);
       font-size: 0.65rem;
       color: var(--color-white);
       text-decoration: underline;
-      opacity: 0.7;
+      opacity: 0.75;
       margin-left: 0.5rem;
       cursor: pointer;
+      transition: opacity 0.2s ease;
     }
     .audio-upload-btn:hover { opacity: 1; color: var(--color-yellow); }
 
@@ -446,8 +548,8 @@
       position: absolute;
       inset: 0;
       background-image: 
-        linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+        linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
       background-size: 60px 60px;
       pointer-events: none;
     }
@@ -468,20 +570,21 @@
 
     .intro-big-go {
       font-family: var(--font-display-anton);
-      font-size: clamp(6rem, 28vw, 26rem);
-      line-height: 0.75;
+      font-size: clamp(7rem, 30vw, 28rem);
+      line-height: 0.72;
       color: var(--color-yellow);
-      text-shadow: 10px 10px 0px var(--color-blue);
+      text-shadow: 12px 12px 0px var(--color-blue);
       letter-spacing: -0.03em;
+      will-change: transform;
     }
 
     .intro-enter-btn {
-      margin-top: 3rem;
+      margin-top: 3.5rem;
       background: var(--color-yellow);
       color: var(--color-black);
       font-family: var(--font-display-archivo);
       font-size: clamp(1.2rem, 3vw, 2.2rem);
-      padding: 1.2rem 3rem;
+      padding: 1.2rem 3.5rem;
       border: 4px solid var(--color-black);
       box-shadow: 8px 8px 0px var(--color-white);
       transform: rotate(-1deg);
@@ -491,7 +594,7 @@
       gap: 1rem;
     }
     .intro-enter-btn:hover {
-      transform: scale(1.05) rotate(1deg);
+      transform: scale(1.06) rotate(1deg);
       background: var(--color-white);
       box-shadow: 12px 12px 0px var(--color-blue);
     }
@@ -505,7 +608,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 8rem 2rem 4rem 2rem;
+      padding: 9rem 2.5rem 5rem 2.5rem;
       background-color: var(--color-yellow);
       color: var(--color-black);
       overflow: hidden;
@@ -515,14 +618,15 @@
     .hero-bg-graphic {
       position: absolute;
       top: 50%;
-      right: -5%;
-      transform: translateY(-50%) rotate(12deg);
+      right: -4%;
+      transform: translateY(-50%) rotate(10deg);
       font-family: var(--font-display-anton);
-      font-size: 40vw;
-      color: rgba(23, 75, 232, 0.15);
+      font-size: 42vw;
+      color: rgba(23, 75, 232, 0.16);
       pointer-events: none;
       user-select: none;
       line-height: 1;
+      will-change: transform;
     }
 
     .hero-header {
@@ -543,18 +647,19 @@
       font-family: var(--font-mono);
       font-size: 1rem;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       background: var(--color-black);
       color: var(--color-yellow);
-      padding: 0.4rem 1rem;
+      padding: 0.45rem 1.2rem;
       display: inline-block;
+      box-shadow: 4px 4px 0px var(--color-white);
     }
 
     .hero-main-title {
       font-family: var(--font-display-anton);
-      font-size: clamp(7rem, 25vw, 24rem);
-      line-height: 0.75;
+      font-size: clamp(7.5rem, 27vw, 25rem);
+      line-height: 0.72;
       text-transform: uppercase;
       color: var(--color-black);
       letter-spacing: -0.04em;
@@ -565,8 +670,8 @@
     .hero-collage-grid {
       display: grid;
       grid-template-columns: repeat(12, 1fr);
-      gap: 1.5rem;
-      margin-top: 2rem;
+      gap: 1.75rem;
+      margin-top: 2.5rem;
       position: relative;
       z-index: 3;
     }
@@ -575,33 +680,44 @@
       grid-column: span 7;
       background: var(--color-black);
       color: var(--color-white);
-      padding: 2.5rem;
+      padding: 3rem;
       border: 3px solid var(--color-black);
-      box-shadow: 8px 8px 0px var(--color-blue);
+      box-shadow: 10px 10px 0px var(--color-blue);
       position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hero-card-main:hover {
+      transform: translateY(-4px);
+      box-shadow: 14px 14px 0px var(--color-blue);
     }
 
     .hero-card-side {
       grid-column: span 5;
       background: var(--color-blue);
       color: var(--color-white);
-      padding: 2.5rem;
+      padding: 3rem;
       border: 3px solid var(--color-black);
-      box-shadow: 8px 8px 0px var(--color-black);
+      box-shadow: 10px 10px 0px var(--color-black);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hero-card-side:hover {
+      transform: translateY(-4px);
+      box-shadow: 14px 14px 0px var(--color-black);
     }
 
     @media (max-width: 900px) {
-      .hero-card-main, .hero-card-side { grid-column: span 12; }
+      #hero { padding: 7rem 1.25rem 4rem 1.25rem; }
+      .hero-card-main, .hero-card-side { grid-column: span 12; padding: 2rem; }
     }
 
     /* ==========================================================================
        09. SECTION 02 — MEET CORTIS
        ========================================================================== */
     #meet-cortis {
-      padding: 8rem 2rem;
+      padding: 9rem 2.5rem;
       background-color: var(--color-black);
       color: var(--color-white);
       position: relative;
@@ -612,40 +728,42 @@
       grid-template-columns: 1fr 1fr;
       gap: 4rem;
       align-items: center;
-      margin-top: 3rem;
+      margin-top: 3.5rem;
     }
 
     .manifesto-box {
       border: 3px solid var(--color-yellow);
-      padding: 3rem;
+      padding: 3.5rem;
       background: var(--color-dark-gray);
       position: relative;
-      box-shadow: 10px 10px 0px var(--color-blue);
+      box-shadow: 12px 12px 0px var(--color-blue);
     }
 
     .manifesto-quote {
       font-family: var(--font-display-archivo);
-      font-size: clamp(1.4rem, 3.2vw, 2.8rem);
-      line-height: 1.15;
+      font-size: clamp(1.6rem, 3.5vw, 3rem);
+      line-height: 1.1;
       color: var(--color-yellow);
       margin-bottom: 1.5rem;
     }
 
     .manifesto-body {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       color: var(--color-light-gray);
       line-height: 1.7;
     }
 
     @media (max-width: 900px) {
-      .cortis-manifesto-grid { grid-template-columns: 1fr; gap: 2rem; }
+      #meet-cortis { padding: 6rem 1.25rem; }
+      .cortis-manifesto-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .manifesto-box { padding: 2rem; }
     }
 
     /* ==========================================================================
        10. SECTION 03 — THE MEMBERS
        ========================================================================== */
     #members {
-      padding: 8rem 2rem;
+      padding: 9rem 2.5rem;
       background-color: var(--color-blue);
       color: var(--color-white);
       position: relative;
@@ -657,31 +775,31 @@
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
-      margin-bottom: 3rem;
+      margin-bottom: 3.5rem;
     }
 
     .member-tab-btn {
       font-family: var(--font-display-archivo);
       font-size: 1.3rem;
-      padding: 0.8rem 1.8rem;
+      padding: 0.9rem 2rem;
       background: var(--color-black);
       color: var(--color-white);
-      border: 2px solid var(--color-white);
-      box-shadow: 4px 4px 0px var(--color-yellow);
-      transition: all 0.25s ease;
+      border: 3px solid var(--color-white);
+      box-shadow: 5px 5px 0px var(--color-yellow);
+      transition: all 0.25s var(--ease-out-expo);
     }
 
     .member-tab-btn.active, .member-tab-btn:hover {
       background: var(--color-yellow);
       color: var(--color-black);
-      transform: translate(-2px, -2px);
-      box-shadow: 6px 6px 0px var(--color-black);
+      transform: translate(-3px, -3px);
+      box-shadow: 8px 8px 0px var(--color-black);
     }
 
     .member-card-wrapper {
       background: var(--color-black);
       border: 4px solid var(--color-black);
-      box-shadow: 14px 14px 0px var(--color-yellow);
+      box-shadow: 16px 16px 0px var(--color-yellow);
       display: grid;
       grid-template-columns: 5fr 7fr;
       gap: 0;
@@ -691,22 +809,29 @@
     .member-image-frame {
       position: relative;
       background: var(--color-mid-gray);
-      min-height: 450px;
+      min-height: 480px;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      border-right: 3px solid var(--color-black);
+      border-right: 4px solid var(--color-black);
     }
 
-    .member-portrait-svg {
+    .member-portrait-image {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: transform 0.5s var(--ease-out-expo);
+    }
+
+    .member-image-frame:hover .member-portrait-image {
+      transform: scale(1.04);
     }
 
     .member-details {
-      padding: 3.5rem;
+      padding: 4rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -715,39 +840,43 @@
 
     .member-name {
       font-family: var(--font-display-anton);
-      font-size: clamp(3.5rem, 8vw, 7rem);
-      line-height: 0.85;
+      font-size: clamp(4rem, 9vw, 7.5rem);
+      line-height: 0.82;
       color: var(--color-yellow);
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
 
     .member-stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
-      margin: 2rem 0;
+      gap: 1.5rem;
+      margin: 2.5rem 0 0 0;
       font-family: var(--font-mono);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
 
     .stat-item {
       border-left: 3px solid var(--color-yellow);
-      padding-left: 0.75rem;
+      padding-left: 1rem;
     }
 
     .stat-label {
-      color: rgba(255,255,255,0.5);
+      color: rgba(255,255,255,0.55);
       font-size: 0.75rem;
       text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
 
     .stat-val {
       color: var(--color-white);
       font-weight: 700;
+      margin-top: 2px;
     }
 
     @media (max-width: 900px) {
+      #members { padding: 6rem 1.25rem; }
       .member-card-wrapper { grid-template-columns: 1fr; }
+      .member-image-frame { min-height: 350px; border-right: none; border-bottom: 4px solid var(--color-black); }
       .member-details { padding: 2rem; }
     }
 
@@ -755,7 +884,7 @@
        11. SECTION 04 — THE STORY OF GO!
        ========================================================================== */
     #story {
-      padding: 8rem 2rem;
+      padding: 9rem 2.5rem;
       background-color: var(--color-white);
       color: var(--color-black);
     }
@@ -764,48 +893,54 @@
       margin-top: 4rem;
       display: flex;
       flex-direction: column;
-      gap: 2.5rem;
+      gap: 3rem;
       position: relative;
     }
 
     .timeline-card {
       background: var(--color-yellow);
       border: 3px solid var(--color-black);
-      box-shadow: 8px 8px 0px var(--color-black);
-      padding: 2.5rem;
+      box-shadow: 10px 10px 0px var(--color-black);
+      padding: 3rem;
       display: grid;
       grid-template-columns: 2fr 10fr;
-      gap: 2rem;
+      gap: 2.5rem;
       align-items: flex-start;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .timeline-card:hover {
+      transform: translateX(8px);
+      box-shadow: 14px 14px 0px var(--color-blue);
     }
 
     .timeline-step {
       font-family: var(--font-display-anton);
-      font-size: 3.5rem;
-      line-height: 1;
+      font-size: 4rem;
+      line-height: 0.9;
       color: var(--color-blue);
     }
 
     .timeline-content h3 {
       font-family: var(--font-display-archivo);
-      font-size: 1.8rem;
-      margin-bottom: 0.75rem;
+      font-size: 1.9rem;
+      margin-bottom: 0.85rem;
     }
 
     .timeline-content p {
-      font-size: 1.05rem;
-      line-height: 1.6;
+      font-size: 1.1rem;
+      line-height: 1.65;
     }
 
     @media (max-width: 768px) {
-      .timeline-card { grid-template-columns: 1fr; gap: 1rem; }
+      #story { padding: 6rem 1.25rem; }
+      .timeline-card { grid-template-columns: 1fr; gap: 1rem; padding: 2rem; }
     }
 
     /* ==========================================================================
-       12. SECTION 05 — INSIDE THE ALBUM
+       12. SECTION 05 — INSIDE THE ALBUM (WITH SPINNING VINYL VISUAL)
        ========================================================================== */
     #album {
-      padding: 8rem 2rem;
+      padding: 9rem 2.5rem;
       background-color: var(--color-black);
       color: var(--color-white);
     }
@@ -813,66 +948,126 @@
     .album-hero-grid {
       display: grid;
       grid-template-columns: 5fr 7fr;
-      gap: 4rem;
+      gap: 4.5rem;
       align-items: center;
-      margin-top: 3rem;
+      margin-top: 4rem;
     }
 
-    .album-art-container {
+    .album-art-wrapper {
       position: relative;
-      aspect-ratio: 1 / 1;
-      background: var(--color-yellow);
-      border: 4px solid var(--color-white);
-      box-shadow: 12px 12px 0px var(--color-blue);
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
+    .album-art-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: var(--color-yellow);
+      border: 4px solid var(--color-white);
+      box-shadow: 14px 14px 0px var(--color-blue);
+      z-index: 2;
+    }
+
+    .album-cover-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Interactive Vinyl Disc Graphic Behind Album Cover */
+    .vinyl-disc {
+      position: absolute;
+      right: -25%;
+      width: 85%;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, #111 25%, #222 26%, #111 35%, #222 36%, #111 50%, #222 51%, #111 70%);
+      border: 4px solid #333;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: vinylSpin 12s linear infinite;
+      transition: right 0.4s var(--ease-out-expo);
+    }
+    .album-art-wrapper:hover .vinyl-disc {
+      right: -38%;
+    }
+    .vinyl-center {
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: var(--color-yellow);
+      border: 4px solid var(--color-black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display-anton);
+      font-size: 0.8rem;
+      color: var(--color-black);
+    }
+
+    @keyframes vinylSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     .tracklist-group {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.15rem;
     }
 
     .track-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1.25rem 1.5rem;
+      padding: 1.35rem 1.75rem;
       background: var(--color-dark-gray);
       border: 2px solid var(--color-mid-gray);
-      transition: all 0.25s ease;
+      transition: all 0.25s var(--ease-out-expo);
+    }
+    .track-row:hover {
+      background: var(--color-mid-gray);
+      transform: translateX(6px);
+      border-color: var(--color-yellow);
     }
 
     .track-row.featured {
       background: var(--color-yellow);
       color: var(--color-black);
       border-color: var(--color-black);
-      box-shadow: 6px 6px 0px var(--color-blue);
-      transform: translateX(10px);
+      box-shadow: 8px 8px 0px var(--color-blue);
+      transform: translateX(12px);
     }
 
     .track-title {
       font-family: var(--font-display-archivo);
-      font-size: 1.3rem;
+      font-size: 1.4rem;
     }
 
     .track-time {
       font-family: var(--font-mono);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 700;
     }
 
     @media (max-width: 900px) {
-      .album-hero-grid { grid-template-columns: 1fr; }
+      #album { padding: 6rem 1.25rem; }
+      .album-hero-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .vinyl-disc { display: none; }
     }
 
     /* ==========================================================================
        13. SECTION 06 — DECODE THE SOUND (AUDIO VISUALIZER)
        ========================================================================== */
     #sound {
-      padding: 8rem 2rem;
+      padding: 9rem 2.5rem;
       background-color: var(--color-black);
       color: var(--color-white);
       position: relative;
@@ -881,11 +1076,11 @@
 
     .sound-visualizer-box {
       width: 100%;
-      height: 380px;
-      background: #000;
-      border: 3px solid var(--color-yellow);
-      box-shadow: 10px 10px 0px var(--color-blue);
-      margin: 3rem 0;
+      height: 420px;
+      background: #080808;
+      border: 4px solid var(--color-yellow);
+      box-shadow: 12px 12px 0px var(--color-blue);
+      margin: 3.5rem 0;
       position: relative;
       overflow: hidden;
     }
@@ -900,95 +1095,312 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 2rem;
-      margin-top: 3rem;
+      margin-top: 3.5rem;
     }
 
     .sound-card {
       background: var(--color-dark-gray);
       border: 2px solid var(--color-mid-gray);
-      padding: 2rem;
+      padding: 2.25rem;
       border-left: 6px solid var(--color-yellow);
+      transition: transform 0.3s ease;
+    }
+    .sound-card:hover {
+      transform: translateY(-4px);
+      border-left-color: var(--color-blue);
     }
 
     .sound-card h4 {
       font-family: var(--font-display-archivo);
-      font-size: 1.3rem;
+      font-size: 1.35rem;
       color: var(--color-yellow);
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.85rem;
+    }
+
+    @media (max-width: 768px) {
+      #sound { padding: 6rem 1.25rem; }
+      .sound-visualizer-box { height: 280px; }
     }
 
     /* ==========================================================================
        14. SECTION 07 — LYRICS BREAKDOWN
        ========================================================================== */
     #lyrics {
-      padding: 8rem 2rem;
+      padding: 9rem 2.5rem;
       background-color: var(--color-yellow);
       color: var(--color-black);
     }
 
     .lyrics-container {
-      margin-top: 3rem;
+      margin-top: 3.5rem;
       display: grid;
       grid-template-columns: 4fr 8fr;
-      gap: 3rem;
+      gap: 3.5rem;
     }
 
     .lyrics-nav {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 0.85rem;
     }
 
     .lyric-segment-btn {
       text-align: left;
       font-family: var(--font-display-archivo);
-      font-size: 1.25rem;
-      padding: 1rem 1.5rem;
+      font-size: 1.3rem;
+      padding: 1.1rem 1.75rem;
       background: var(--color-black);
       color: var(--color-white);
-      border: 2px solid var(--color-black);
-      transition: all 0.2s ease;
+      border: 3px solid var(--color-black);
+      transition: all 0.25s var(--ease-out-expo);
     }
 
     .lyric-segment-btn.active, .lyric-segment-btn:hover {
       background: var(--color-blue);
       color: var(--color-white);
       transform: translateX(10px);
-      box-shadow: 4px 4px 0px var(--color-black);
+      box-shadow: 6px 6px 0px var(--color-black);
     }
 
     .lyric-display-box {
       background: var(--color-white);
-      border: 3px solid var(--color-black);
-      box-shadow: 10px 10px 0px var(--color-black);
-      padding: 3rem;
+      border: 4px solid var(--color-black);
+      box-shadow: 12px 12px 0px var(--color-black);
+      padding: 3.5rem;
+      position: relative;
     }
 
     .lyric-excerpt {
       font-family: var(--font-display-archivo);
-      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-size: clamp(1.6rem, 3.2vw, 2.75rem);
       line-height: 1.2;
       color: var(--color-blue);
       margin-bottom: 2rem;
       border-left: 6px solid var(--color-yellow);
-      padding-left: 1.25rem;
+      padding-left: 1.5rem;
     }
 
     .lyric-analysis-text {
-      font-size: 1.1rem;
-      line-height: 1.7;
+      font-size: 1.15rem;
+      line-height: 1.75;
       color: var(--color-dark-gray);
     }
 
+    .realtime-lyrics-panel {
+      margin-top: 4rem;
+      padding: clamp(1.5rem, 4vw, 3rem);
+      background: var(--color-black);
+      color: var(--color-white);
+      border: 4px solid var(--color-black);
+      box-shadow: 12px 12px 0 var(--color-blue);
+    }
+
+    .realtime-lyrics-header, .realtime-lyrics-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .realtime-lyrics-header {
+      flex-wrap: wrap;
+    }
+
+    .realtime-lyrics-heading {
+      font-family: var(--font-display-archivo);
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      text-transform: uppercase;
+    }
+
+    .lyrics-sync-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--color-yellow);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .lyrics-sync-status::before {
+      width: 0.55rem;
+      height: 0.55rem;
+      content: "";
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .realtime-lyrics-panel.is-syncing .lyrics-sync-status::before {
+      animation: lyrics-sync-pulse 1s ease-in-out infinite;
+    }
+
+    .realtime-lyrics-focus {
+      min-height: 13rem;
+      margin: 2rem 0;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .realtime-lyrics-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 1.5rem 0;
+    }
+
+    .realtime-lyrics-control {
+      min-height: 2.8rem;
+      padding: 0.65rem 1rem;
+      border: 2px solid var(--color-yellow);
+      background: transparent;
+      color: var(--color-white);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+
+    .realtime-lyrics-control:hover {
+      background: var(--color-yellow);
+      color: var(--color-black);
+      transform: translateY(-2px);
+    }
+
+    .realtime-lyrics-control:focus-visible {
+      outline: 3px solid var(--color-white);
+      outline-offset: 3px;
+    }
+
+    .realtime-lyric-line {
+      margin: 0.35rem 0;
+      color: rgba(255, 255, 255, 0.38);
+      font-family: var(--font-display-archivo);
+      font-size: clamp(1rem, 2.2vw, 1.4rem);
+      transition: color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .realtime-lyric-line.current {
+      color: var(--color-yellow);
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      animation: lyric-line-enter 0.45s var(--ease-out-expo) both;
+    }
+
+    .realtime-lyric-line.placeholder {
+      color: var(--color-yellow);
+      font-size: clamp(1.25rem, 3vw, 2rem);
+    }
+
+    .realtime-lyrics-list {
+      display: grid;
+      gap: 0.6rem;
+      max-height: 22rem;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .realtime-lyrics-row {
+      display: grid;
+      grid-template-columns: 4.5rem 1fr;
+      gap: 1rem;
+      padding: 0.8rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: rgba(255, 255, 255, 0.65);
+      transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .realtime-lyrics-row.active {
+      color: var(--color-black);
+      background: var(--color-yellow);
+      border-color: var(--color-yellow);
+      box-shadow: 0 0 0 2px var(--color-yellow);
+    }
+
+    .realtime-lyrics-time {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+    }
+
+    .realtime-lyrics-meta {
+      margin-top: 1.5rem;
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 0.85rem;
+    }
+
+    .realtime-lyrics-shortcuts {
+      margin-top: 0.75rem;
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 0.75rem;
+      text-align: center;
+    }
+
+    .realtime-lyrics-progress {
+      height: 5px;
+      margin-top: 0.8rem;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .realtime-lyrics-progress-fill {
+      width: 0;
+      height: 100%;
+      background: var(--color-yellow);
+      transition: width 0.12s linear;
+    }
+
+    .realtime-lyrics-panel:fullscreen {
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: clamp(1.25rem, 4vw, 4rem);
+      overflow-y: auto;
+      background: var(--color-black);
+    }
+
+    .realtime-lyrics-panel:fullscreen .realtime-lyrics-focus {
+      flex: 1;
+    }
+
+    .realtime-lyrics-panel:fullscreen .realtime-lyrics-list {
+      max-height: 35vh;
+    }
+
+    @keyframes lyrics-sync-pulse {
+      50% { opacity: 0.35; transform: scale(0.75); }
+    }
+
+    @keyframes lyric-line-enter {
+      from { opacity: 0.25; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     @media (max-width: 900px) {
-      .lyrics-container { grid-template-columns: 1fr; }
+      #lyrics { padding: 6rem 1.25rem; }
+      .lyrics-container { grid-template-columns: 1fr; gap: 2rem; }
+      .lyric-display-box { padding: 2rem; }
+    }
+
+    @media (max-width: 560px) {
+      .realtime-lyrics-header, .realtime-lyrics-meta { align-items: flex-start; flex-direction: column; }
+      .realtime-lyrics-focus { min-height: 10rem; }
+      .realtime-lyrics-control { padding: 0.6rem 0.75rem; }
     }
 
     /* ==========================================================================
        15. SECTION 08 — VISUAL ARCHIVE & BTS VIDEO
        ========================================================================== */
     #archive {
-      padding: 8rem 2rem;
+      padding: 9rem 2.5rem;
       background-color: var(--color-black);
       color: var(--color-white);
     }
@@ -996,15 +1408,19 @@
     .archive-video-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-      margin-top: 3rem;
+      gap: 3.5rem;
+      margin-top: 3.5rem;
     }
 
     .video-card {
       background: var(--color-dark-gray);
       border: 3px solid var(--color-yellow);
-      box-shadow: 8px 8px 0px var(--color-blue);
-      padding: 1.5rem;
+      box-shadow: 10px 10px 0px var(--color-blue);
+      padding: 1.75rem;
+      transition: transform 0.3s ease;
+    }
+    .video-card:hover {
+      transform: translateY(-5px);
     }
 
     .video-wrapper {
@@ -1013,7 +1429,7 @@
       height: 0;
       overflow: hidden;
       background: #000;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
       border: 2px solid var(--color-black);
     }
 
@@ -1028,20 +1444,21 @@
 
     .video-title {
       font-family: var(--font-display-archivo);
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       color: var(--color-yellow);
       margin-bottom: 0.5rem;
     }
 
     @media (max-width: 900px) {
-      .archive-video-grid { grid-template-columns: 1fr; }
+      #archive { padding: 6rem 1.25rem; }
+      .archive-video-grid { grid-template-columns: 1fr; gap: 2.5rem; }
     }
 
     /* ==========================================================================
        16. SECTION 09 — CREDITS & OUTRO
        ========================================================================== */
     #credits {
-      padding: 8rem 2rem 4rem 2rem;
+      padding: 9rem 2.5rem 5rem 2.5rem;
       background-color: var(--color-yellow);
       color: var(--color-black);
       border-top: 4px solid var(--color-black);
@@ -1050,17 +1467,17 @@
     .credits-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 3rem;
-      margin: 4rem 0;
+      gap: 3.5rem;
+      margin: 4.5rem 0;
     }
 
     .credit-group h4 {
       font-family: var(--font-display-archivo);
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       text-transform: uppercase;
       border-bottom: 3px solid var(--color-black);
-      padding-bottom: 0.5rem;
-      margin-bottom: 1rem;
+      padding-bottom: 0.6rem;
+      margin-bottom: 1.2rem;
     }
 
     .credit-list {
@@ -1068,52 +1485,141 @@
       font-family: var(--font-mono);
       font-size: 0.95rem;
       display: flex;
-      flex-direction: flex-column;
-      gap: 0.4rem;
+      flex-direction: column;
+      gap: 0.5rem;
     }
 
     .disclaimer-box {
-      margin-top: 5rem;
-      padding: 2rem;
+      margin-top: 6rem;
+      padding: 2.5rem;
       background: var(--color-black);
       color: var(--color-white);
-      border: 3px solid var(--color-black);
+      border: 4px solid var(--color-black);
       font-family: var(--font-mono);
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 1.5rem;
+      gap: 2rem;
+      box-shadow: 10px 10px 0px var(--color-blue);
     }
 
     .replay-btn {
       background: var(--color-yellow);
       color: var(--color-black);
       font-family: var(--font-display-archivo);
-      font-size: 1.1rem;
-      padding: 0.8rem 1.8rem;
-      border: 2px solid var(--color-black);
+      font-size: 1.15rem;
+      padding: 0.9rem 2.2rem;
+      border: 3px solid var(--color-black);
       box-shadow: 4px 4px 0px var(--color-white);
-      transition: all 0.2s ease;
+      transition: all 0.25s var(--ease-out-expo);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
     .replay-btn:hover {
-      transform: scale(1.05);
+      transform: scale(1.05) translate(-2px, -2px);
       background: var(--color-white);
+      box-shadow: 6px 6px 0px var(--color-black);
+    }
+
+    @media (max-width: 768px) {
+      #credits { padding: 6rem 1.25rem 3rem 1.25rem; }
+      .disclaimer-box { padding: 1.5rem; flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 900px) {
+      #meet-cortis, #members, #story, #album, #sound, #lyrics, #archive {
+        padding: 6rem 1.25rem;
+      }
+
+      #credits { padding: 6rem 1.25rem 3rem; }
+      .hero-main-title { font-size: clamp(7rem, 24vw, 14rem); }
+      .member-image-frame { min-height: clamp(18rem, 55vw, 28rem); }
+      .member-details { padding: clamp(1.5rem, 5vw, 2.5rem); }
+      .sound-visualizer-box { height: clamp(15rem, 42vw, 22rem); }
+      .archive-video-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      #hero { padding: 6rem 1rem 3.5rem; }
+      #meet-cortis, #members, #story, #album, #sound, #lyrics, #archive {
+        padding: 5rem 1rem;
+      }
+
+      #credits { padding: 5rem 1rem 2.5rem; }
+      .hero-main-title {
+        font-size: clamp(6rem, 25vw, 9rem);
+        text-shadow: 6px 6px 0 var(--color-white);
+      }
+      .hero-meta-row { align-items: flex-start; }
+      .hero-subtitle { font-size: 0.78rem; padding: 0.4rem 0.7rem; }
+      .hero-card-main, .hero-card-side { padding: 1.25rem; }
+      .cortis-manifesto-grid { gap: 2rem; }
+      .manifesto-box { padding: 1.4rem; }
+      .members-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+      .member-tab-btn { padding: 0.75rem 0.45rem; font-size: clamp(0.75rem, 3.2vw, 1rem); }
+      .member-image-frame { min-height: 18rem; }
+      .member-details { padding: 1.25rem; }
+      .member-stats-grid { gap: 1rem 0.75rem; font-size: 0.78rem; }
+      .stat-item { padding-left: 0.65rem; overflow-wrap: anywhere; }
+      .stat-label { font-size: 0.65rem; }
+      .timeline-card { padding: 1.25rem; }
+      .timeline-step { font-size: 3rem; }
+      .timeline-content h3 { font-size: 1.4rem; }
+      .album-hero-grid { gap: 2.5rem; }
+      .album-art-wrapper { width: min(100%, 28rem); margin-inline: auto; }
+      .track-row { gap: 0.75rem; padding: 1rem 0.75rem; }
+      .track-row.featured { transform: none; }
+      .track-title { font-size: 1rem; }
+      .track-time { font-size: 0.8rem; }
+      .sound-visualizer-box { height: 14rem; margin: 2rem 0; }
+      .sound-card { padding: 1.35rem; }
+      .lyric-display-box { padding: 1.25rem; box-shadow: 7px 7px 0 var(--color-black); }
+      .lyric-segment-btn { padding: 0.85rem 1rem; font-size: 1rem; }
+      .realtime-lyrics-panel { padding: 1rem; box-shadow: 7px 7px 0 var(--color-blue); }
+      .realtime-lyrics-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .realtime-lyrics-control { width: 100%; padding: 0.6rem 0.45rem; font-size: 0.85rem; }
+      .realtime-lyrics-row { grid-template-columns: 3.25rem minmax(0, 1fr); gap: 0.6rem; padding: 0.7rem; overflow-wrap: anywhere; }
+      .video-card { padding: 1rem; box-shadow: 6px 6px 0 var(--color-blue); }
+      .video-title { font-size: 1.2rem; }
+      .credits-grid { grid-template-columns: minmax(0, 1fr); gap: 2rem; margin: 3rem 0; }
+      .disclaimer-box { margin-top: 3.5rem; padding: 1.1rem; font-size: 0.75rem; }
+      .replay-btn { padding: 0.8rem 1.2rem; font-size: 1rem; }
+      .audio-widget { right: 0.75rem; bottom: 0.75rem; gap: 0.55rem; padding: 0.45rem 0.65rem; }
+      .audio-upload-btn, .audio-vis-mini, .audio-preset-tag { display: none; }
+      .audio-play-btn { width: 36px; height: 36px; flex: 0 0 36px; }
+      .nav-brand { font-size: 1.55rem; }
+      .lang-btn { padding: 0.25rem 0.55rem; }
+      .marquee-item { font-size: 1.7rem; padding-inline: 1.25rem; }
+    }
+
+    @media (max-width: 360px) {
+      .nav-bar { padding-inline: 0.75rem; }
+      .nav-brand { font-size: 1.35rem; }
+      .nav-menu-toggle { min-width: 2.5rem; padding-inline: 0.5rem; }
+      .hero-main-title { font-size: 5.7rem; }
+      .member-stats-grid { grid-template-columns: 1fr; }
+      .realtime-lyrics-header { gap: 0.5rem; }
+      .realtime-lyrics-heading { font-size: 1.25rem; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Noise Overlay -->
+  <!-- Noise & Scanline Overlay -->
   <div class="noise-bg"></div>
+  <div class="scanlines"></div>
 
   <!-- Custom Cursor -->
-  <div class="custom-cursor" id="cursor"></div>
+  <div class="custom-cursor" id="cursor">
+    <span class="cursor-label" id="cursor-label">GO!</span>
+  </div>
 
   <!-- GLOBAL PERSISTENT AUDIO WIDGET -->
-  <div class="audio-widget" id="audio-widget">
+  <div class="audio-widget" id="audio-widget" data-cursor-text="AUDIO">
     <button class="audio-play-btn" id="audio-toggle-btn" aria-label="Toggle Audio">
       <i data-lucide="play" id="audio-icon"></i>
     </button>
@@ -1135,22 +1641,24 @@
 
   <!-- NAVIGATION HEADER -->
   <header class="nav-bar">
-    <a href="#hero" class="nav-brand">
+    <a href="#hero" class="nav-brand" data-cursor-text="HOME">
       CORTIS <span class="text-yellow">//</span> GO!
     </a>
 
-    <ul class="nav-links">
-      <li><a href="#meet-cortis" class="nav-link" data-i18n="nav_about">ABOUT</a></li>
-      <li><a href="#members" class="nav-link" data-i18n="nav_members">MEMBERS</a></li>
-      <li><a href="#story" class="nav-link" data-i18n="nav_story">STORY</a></li>
-      <li><a href="#album" class="nav-link" data-i18n="nav_album">ALBUM</a></li>
-      <li><a href="#sound" class="nav-link" data-i18n="nav_sound">SOUND</a></li>
-      <li><a href="#lyrics" class="nav-link" data-i18n="nav_lyrics">LYRICS</a></li>
-      <li><a href="#archive" class="nav-link" data-i18n="nav_archive">ARCHIVE</a></li>
+    <ul class="nav-links" id="primary-navigation">
+      <li><a href="#meet-cortis" class="nav-link" data-i18n="nav_about" data-cursor-text="EXPLORE">ABOUT</a></li>
+      <li><a href="#members" class="nav-link" data-i18n="nav_members" data-cursor-text="EXPLORE">MEMBERS</a></li>
+      <li><a href="#story" class="nav-link" data-i18n="nav_story" data-cursor-text="EXPLORE">STORY</a></li>
+      <li><a href="#album" class="nav-link" data-i18n="nav_album" data-cursor-text="EXPLORE">ALBUM</a></li>
+      <li><a href="#sound" class="nav-link" data-i18n="nav_sound" data-cursor-text="EXPLORE">SOUND</a></li>
+      <li><a href="#lyrics" class="nav-link" data-i18n="nav_lyrics" data-cursor-text="EXPLORE">LYRICS</a></li>
+      <li><a href="#archive" class="nav-link" data-i18n="nav_archive" data-cursor-text="EXPLORE">ARCHIVE</a></li>
     </ul>
 
+    <button class="nav-menu-toggle" id="nav-menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation">MENU</button>
+
     <!-- Language Switcher -->
-    <div class="lang-switcher">
+    <div class="lang-switcher" data-cursor-text="LANG">
       <button class="lang-btn active" id="lang-en" onclick="switchLanguage('en')">EN</button>
       <button class="lang-btn" id="lang-id" onclick="switchLanguage('id')">ID</button>
     </div>
@@ -1163,13 +1671,13 @@
     <div class="intro-bg-grid"></div>
     <div class="intro-title-wrapper">
       <div class="intro-cortis-tag" data-i18n="intro_tag">BIGHIT MUSIC PRESENTS</div>
-      <div class="intro-big-go">GO!</div>
+      <div class="intro-big-go" id="intro-go-text">GO!</div>
       <div class="sticker sticker-yellow" style="transform: rotate(4deg); margin-top: 1rem;">
         COLOR OUTSIDE THE LINES
       </div>
     </div>
     
-    <button class="intro-enter-btn" id="enter-experience-btn">
+    <button class="intro-enter-btn" id="enter-experience-btn" data-cursor-text="START">
       <span data-i18n="intro_enter_btn">ENTER EXPERIENCE</span>
       <i data-lucide="arrow-right"></i>
     </button>
@@ -1182,7 +1690,7 @@
          SECTION 01 — GO! HERO
          ========================================================================== -->
     <section id="hero">
-      <div class="hero-bg-graphic">GO</div>
+      <div class="hero-bg-graphic" id="hero-bg-text">GO</div>
 
       <div class="hero-header">
         <div class="hero-meta-row">
@@ -1190,13 +1698,15 @@
           <div class="sticker sticker-blue">BIGHIT MUSIC</div>
         </div>
 
-        <h1 class="hero-main-title">GO!</h1>
+        <div class="gsap-reveal-wrapper">
+          <h1 class="hero-main-title gsap-reveal-target" id="hero-title">GO!</h1>
+        </div>
       </div>
 
       <div class="hero-collage-grid">
-        <div class="hero-card-main">
+        <div class="hero-card-main gsap-tilt">
           <div class="section-tag" data-i18n="hero_tag">01 // VISUAL STATEMENT</div>
-          <h2 class="title-h2" style="color: var(--color-yellow); margin-bottom: 1rem;" data-i18n="hero_headline">
+          <h2 class="title-h2" style="color: var(--color-yellow); margin-bottom: 1.25rem;" data-i18n="hero_headline">
             THINK DIFFERENT. MOVE DIFFERENT.
           </h2>
           <p style="font-size: 1.15rem; opacity: 0.9;" data-i18n="hero_desc">
@@ -1204,13 +1714,13 @@
           </p>
         </div>
 
-        <div class="hero-card-side">
+        <div class="hero-card-side gsap-tilt">
           <div>
-            <div class="sticker sticker-white" style="margin-bottom: 1rem;">GENRE DECODED</div>
-            <h3 style="font-family: var(--font-display-archivo); font-size: 1.8rem; margin-bottom: 0.5rem;">
+            <div class="sticker sticker-white" style="margin-bottom: 1.25rem;">GENRE DECODED</div>
+            <h3 style="font-family: var(--font-display-archivo); font-size: 1.85rem; margin-bottom: 0.5rem;">
               MINIMAL TRAP + HYPER-POP
             </h3>
-            <p style="font-size: 0.95rem; opacity: 0.9;" data-i18n="hero_genre_desc">
+            <p style="font-size: 0.98rem; opacity: 0.9; line-height: 1.6;" data-i18n="hero_genre_desc">
               Pounding 808 bass, metallic percussive textures, and high-energy chant hooks designed for maximum athletic performance and street culture expression.
             </p>
           </div>
@@ -1234,10 +1744,12 @@
          ========================================================================== -->
     <section id="meet-cortis">
       <div class="section-tag" data-i18n="sec_02_tag">02 // GROUP IDENTITY</div>
-      <h2 class="title-h1" style="color: var(--color-yellow);" data-i18n="meet_title">MEET CORTIS</h2>
+      <div class="gsap-reveal-wrapper">
+        <h2 class="title-h1 gsap-reveal-target" style="color: var(--color-yellow);" data-i18n="meet_title">MEET CORTIS</h2>
+      </div>
 
       <div class="cortis-manifesto-grid">
-        <div class="manifesto-box">
+        <div class="manifesto-box tape-accent gsap-tilt">
           <div class="sticker sticker-yellow" style="margin-bottom: 1.5rem;">THE NAME ORIGIN</div>
           <div class="manifesto-quote" data-i18n="manifesto_quote">
             "COLOR OUTSIDE THE LINES"
@@ -1251,7 +1763,7 @@
           <h3 class="title-h2" style="margin-bottom: 1.5rem;" data-i18n="group_philosophy_title">
             THE FIVE-MEMBER CREATIVE ENGINE
           </h3>
-          <p style="font-size: 1.1rem; line-height: 1.7; color: var(--color-light-gray); margin-bottom: 1.5rem;" data-i18n="group_philosophy_desc">
+          <p style="font-size: 1.15rem; line-height: 1.75; color: var(--color-light-gray); margin-bottom: 1.75rem;" data-i18n="group_philosophy_desc">
             Composed of MARTIN, JAMES, JUHOON, SEONGHYEON, and KEONHO, CORTIS represents a self-driven generation of artists who write, produce, and choreograph their own material.
           </p>
           <div class="sticker sticker-blue">5 MEMBERS // 1 VISION</div>
@@ -1264,30 +1776,30 @@
          ========================================================================== -->
     <section id="members">
       <div class="section-tag" style="color: var(--color-black);" data-i18n="sec_03_tag">03 // MEMBER PROFILES</div>
-      <h2 class="title-h1" style="color: var(--color-black); margin-bottom: 2rem;" data-i18n="members_title">THE CREATORS</h2>
+      <div class="gsap-reveal-wrapper">
+        <h2 class="title-h1 gsap-reveal-target" style="color: var(--color-black); margin-bottom: 2rem;" data-i18n="members_title">THE CREATORS</h2>
+      </div>
 
       <!-- Member Tabs -->
       <div class="members-tabs" id="member-tabs">
-        <button class="member-tab-btn active" onclick="showMember('martin')">01. MARTIN</button>
-        <button class="member-tab-btn" onclick="showMember('james')">02. JAMES</button>
-        <button class="member-tab-btn" onclick="showMember('juhoon')">03. JUHOON</button>
-        <button class="member-tab-btn" onclick="showMember('seonghyeon')">04. SEONGHYEON</button>
-        <button class="member-tab-btn" onclick="showMember('keonho')">05. KEONHO</button>
+        <button class="member-tab-btn active" onclick="showMember('martin')" data-cursor-text="PROFILE">01. MARTIN</button>
+        <button class="member-tab-btn" onclick="showMember('james')" data-cursor-text="PROFILE">02. JAMES</button>
+        <button class="member-tab-btn" onclick="showMember('juhoon')" data-cursor-text="PROFILE">03. JUHOON</button>
+        <button class="member-tab-btn" onclick="showMember('seonghyeon')" data-cursor-text="PROFILE">04. SEONGHYEON</button>
+        <button class="member-tab-btn" onclick="showMember('keonho')" data-cursor-text="PROFILE">05. KEONHO</button>
       </div>
 
       <!-- Active Member Display Card -->
       <div class="member-card-wrapper" id="member-card-display">
         <div class="member-image-frame">
-          <svg class="member-portrait-svg" viewBox="0 0 400 500" id="member-svg-portrait">
-            <!-- Dynamic SVG Graphic generated via JS -->
-          </svg>
+          <img class="member-portrait-image" id="member-portrait-image" src="assets/images/martin-cortis.webp" alt="MARTIN of CORTIS" loading="lazy">
         </div>
 
         <div class="member-details">
           <div>
             <div class="sticker sticker-yellow" id="member-role-sticker">LEADER // PRODUCER</div>
             <h3 class="member-name" id="member-display-name">MARTIN</h3>
-            <p id="member-display-bio" style="font-size: 1.1rem; line-height: 1.6; color: var(--color-light-gray);">
+            <p id="member-display-bio" style="font-size: 1.15rem; line-height: 1.65; color: var(--color-light-gray);">
               Leader of CORTIS. Born in Songpa-gu, Seoul. Participated in songwriting and production for "GO!", "JoyRide", and "Lullaby".
             </p>
           </div>
@@ -1319,10 +1831,12 @@
          ========================================================================== -->
     <section id="story">
       <div class="section-tag" style="color: var(--color-blue);" data-i18n="sec_04_tag">04 // CREATIVE JOURNEY</div>
-      <h2 class="title-h1" style="color: var(--color-black);" data-i18n="story_title">THE STORY OF GO!</h2>
+      <div class="gsap-reveal-wrapper">
+        <h2 class="title-h1 gsap-reveal-target" style="color: var(--color-black);" data-i18n="story_title">THE STORY OF GO!</h2>
+      </div>
 
       <div class="timeline-container">
-        <div class="timeline-card">
+        <div class="timeline-card gsap-tilt">
           <div class="timeline-step">01</div>
           <div class="timeline-content">
             <h3 data-i18n="story_step1_title">THE 2-YEAR ALBUM R&D PROCESS</h3>
@@ -1332,7 +1846,7 @@
           </div>
         </div>
 
-        <div class="timeline-card">
+        <div class="timeline-card gsap-tilt">
           <div class="timeline-step">02</div>
           <div class="timeline-content">
             <h3 data-i18n="story_step2_title">CORTIS MEMBER PARTICIPATION</h3>
@@ -1342,7 +1856,7 @@
           </div>
         </div>
 
-        <div class="timeline-card">
+        <div class="timeline-card gsap-tilt">
           <div class="timeline-step">03</div>
           <div class="timeline-content">
             <h3 data-i18n="story_step3_title">SONG MEANING & INTERPRETATION</h3>
@@ -1355,26 +1869,28 @@
     </section>
 
     <!-- ==========================================================================
-         SECTION 05 — INSIDE THE ALBUM
+         SECTION 05 — INSIDE THE ALBUM (WITH SPINNING VINYL)
          ========================================================================== -->
     <section id="album">
       <div class="section-tag" data-i18n="sec_05_tag">05 // DISCOGRAPHY</div>
-      <h2 class="title-h1" style="color: var(--color-yellow);" data-i18n="album_title">COLOR OUTSIDE THE LINES</h2>
+      <div class="gsap-reveal-wrapper">
+        <h2 class="title-h1 gsap-reveal-target" style="color: var(--color-yellow);" data-i18n="album_title">COLOR OUTSIDE THE LINES</h2>
+      </div>
 
       <div class="album-hero-grid">
-        <div class="album-art-container">
-          <div style="text-align: center; padding: 2rem;">
-            <div class="font-anton" style="font-size: 3rem; color: var(--color-black); line-height: 0.9;">
-              COLOR<br>OUTSIDE<br>THE LINES
-            </div>
-            <div class="sticker sticker-blue" style="margin-top: 1.5rem;">DEBUT EP // 2025</div>
+        <div class="album-art-wrapper" data-cursor-text="VINYL">
+          <div class="album-art-container">
+            <img class="album-cover-image" src="assets/images/cortis-album-cover.jpg" alt="CORTIS — COLOR OUTSIDE THE LINES album cover" loading="lazy">
+          </div>
+          <div class="vinyl-disc">
+            <div class="vinyl-center">CORTIS</div>
           </div>
         </div>
 
         <div>
           <h3 class="title-h2" style="margin-bottom: 1.5rem;" data-i18n="tracklist_heading">OFFICIAL TRACKLIST</h3>
           <div class="tracklist-group">
-            <div class="track-row featured">
+            <div class="track-row featured" data-cursor-text="PLAYING">
               <div>
                 <span style="font-family: var(--font-mono); font-size: 0.8rem; margin-right: 0.5rem;">01.</span>
                 <span class="track-title">GO!</span>
@@ -1424,35 +1940,37 @@
          ========================================================================== -->
     <section id="sound">
       <div class="section-tag" data-i18n="sec_06_tag">06 // FREQUENCY ANALYSIS</div>
-      <h2 class="title-h1" style="color: var(--color-white);" data-i18n="sound_title">DECODE THE SOUND</h2>
+      <div class="gsap-reveal-wrapper">
+        <h2 class="title-h1 gsap-reveal-target" style="color: var(--color-white);" data-i18n="sound_title">DECODE THE SOUND</h2>
+      </div>
 
       <p style="font-size: 1.15rem; color: var(--color-light-gray); max-width: 700px; margin-top: 1rem;" data-i18n="sound_subtitle">
         Real-time Web Audio API frequency visualizer processing the instrumental audio graph data.
       </p>
 
       <!-- Audio Reactive Visualizer Canvas -->
-      <div class="sound-visualizer-box">
+      <div class="sound-visualizer-box" data-cursor-text="VISUALIZER">
         <canvas id="visualizer-canvas"></canvas>
       </div>
 
       <div class="sound-breakdown-grid">
         <div class="sound-card">
           <h4 data-i18n="sound_card1_title">SUB-BASS 808s</h4>
-          <p style="font-size: 0.95rem; opacity: 0.85;" data-i18n="sound_card1_desc">
+          <p style="font-size: 0.98rem; opacity: 0.85;" data-i18n="sound_card1_desc">
             Deep, distorted 808 bass lines tuned to hit aggressively in live arenas and headphone setups.
           </p>
         </div>
 
         <div class="sound-card">
           <h4 data-i18n="sound_card2_title">SHARP SYNTH PLUCKS</h4>
-          <p style="font-size: 0.95rem; opacity: 0.85;" data-i18n="sound_card2_desc">
+          <p style="font-size: 0.98rem; opacity: 0.85;" data-i18n="sound_card2_desc">
             High-register lead synths with fast decay times creating rhythmic drive and urgency.
           </p>
         </div>
 
         <div class="sound-card">
           <h4 data-i18n="sound_card3_title">METALLIC HI-HATS</h4>
-          <p style="font-size: 0.95rem; opacity: 0.85;" data-i18n="sound_card3_desc">
+          <p style="font-size: 0.98rem; opacity: 0.85;" data-i18n="sound_card3_desc">
             Double-time trap rolls mixed with industrial percussive hits for kinetic momentum.
           </p>
         </div>
@@ -1464,21 +1982,23 @@
          ========================================================================== -->
     <section id="lyrics">
       <div class="section-tag" style="color: var(--color-blue);" data-i18n="sec_07_tag">07 // LYRIC ANALYZER</div>
-      <h2 class="title-h1" style="color: var(--color-black);" data-i18n="lyrics_title">LYRICS BREAKDOWN</h2>
+      <div class="gsap-reveal-wrapper">
+        <h2 class="title-h1 gsap-reveal-target" style="color: var(--color-black);" data-i18n="lyrics_title">LYRICS BREAKDOWN</h2>
+      </div>
 
       <div class="lyrics-container">
         <!-- Segment Tabs -->
         <div class="lyrics-nav" id="lyrics-nav">
-          <button class="lyric-segment-btn active" onclick="showLyricSegment('intro')">01. INTRO</button>
-          <button class="lyric-segment-btn" onclick="showLyricSegment('verse1')">02. VERSE 01</button>
-          <button class="lyric-segment-btn" onclick="showLyricSegment('prechorus')">03. PRE-CHORUS</button>
-          <button class="lyric-segment-btn" onclick="showLyricSegment('chorus')">04. CHORUS</button>
-          <button class="lyric-segment-btn" onclick="showLyricSegment('verse2')">05. VERSE 02</button>
-          <button class="lyric-segment-btn" onclick="showLyricSegment('outro')">06. OUTRO</button>
+          <button class="lyric-segment-btn active" data-lyric-segment="intro" onclick="showLyricSegment('intro')" data-cursor-text="SELECT">01. INTRO</button>
+          <button class="lyric-segment-btn" data-lyric-segment="verse1" onclick="showLyricSegment('verse1')" data-cursor-text="SELECT">02. VERSE 01</button>
+          <button class="lyric-segment-btn" data-lyric-segment="prechorus" onclick="showLyricSegment('prechorus')" data-cursor-text="SELECT">03. PRE-CHORUS</button>
+          <button class="lyric-segment-btn" data-lyric-segment="chorus" onclick="showLyricSegment('chorus')" data-cursor-text="SELECT">04. CHORUS</button>
+          <button class="lyric-segment-btn" data-lyric-segment="verse2" onclick="showLyricSegment('verse2')" data-cursor-text="SELECT">05. VERSE 02</button>
+          <button class="lyric-segment-btn" data-lyric-segment="outro" onclick="showLyricSegment('outro')" data-cursor-text="SELECT">06. OUTRO</button>
         </div>
 
         <!-- Lyrics Inspector Card -->
-        <div class="lyric-display-box">
+        <div class="lyric-display-box" id="lyric-display-box">
           <div class="sticker sticker-blue" id="lyric-segment-tag" style="margin-bottom: 1.5rem;">SECTION: INTRO</div>
           <div class="lyric-excerpt" id="lyric-excerpt-text">
             "Line set, ready to break the boundary..."
@@ -1488,6 +2008,33 @@
           </div>
         </div>
       </div>
+
+      <div class="realtime-lyrics-panel" id="realtime-lyrics-panel" aria-label="Realtime lyrics player">
+        <div class="realtime-lyrics-header">
+          <h3 class="realtime-lyrics-heading">LIVE LYRICS // <span id="realtime-lyrics-section">INTRO</span></h3>
+          <span class="lyrics-sync-status" id="lyrics-sync-status" role="status">READY TO SYNC</span>
+        </div>
+        <div class="realtime-lyrics-controls" aria-label="Live lyrics playback controls">
+          <button class="realtime-lyrics-control" id="lyrics-back-10" type="button" aria-label="Rewind 10 seconds">≪ 10s</button>
+          <button class="realtime-lyrics-control" id="lyrics-play-pause" type="button" aria-label="Play audio">PLAY</button>
+          <button class="realtime-lyrics-control" id="lyrics-forward-10" type="button" aria-label="Forward 10 seconds">10s ≫</button>
+          <button class="realtime-lyrics-control" id="lyrics-fullscreen" type="button" aria-label="Enter fullscreen">FULLSCREEN</button>
+        </div>
+        <div class="realtime-lyrics-focus" aria-live="polite">
+          <p class="realtime-lyric-line" id="realtime-lyrics-previous"></p>
+          <p class="realtime-lyric-line current placeholder" id="realtime-lyrics-current">SET YOUR TIMESTAMPS</p>
+          <p class="realtime-lyric-line" id="realtime-lyrics-next">Edit the line times in liveLyricsData below.</p>
+        </div>
+        <div class="realtime-lyrics-list" id="realtime-lyrics-list"></div>
+        <div class="realtime-lyrics-meta">
+          <span id="realtime-lyrics-hint">Add a time in seconds to each lyric line to enable sync.</span>
+          <span id="realtime-lyrics-clock">00:00</span>
+        </div>
+        <div class="realtime-lyrics-shortcuts">SPACE: PLAY / PAUSE &nbsp;·&nbsp; ← / →: SEEK 10s</div>
+        <div class="realtime-lyrics-progress" aria-hidden="true">
+          <div class="realtime-lyrics-progress-fill" id="realtime-lyrics-progress-fill"></div>
+        </div>
+      </div>
     </section>
 
     <!-- ==========================================================================
@@ -1495,13 +2042,15 @@
          ========================================================================== -->
     <section id="archive">
       <div class="section-tag" data-i18n="sec_08_tag">08 // MEDIA ARCHIVE</div>
-      <h2 class="title-h1" style="color: var(--color-yellow);" data-i18n="archive_title">VISUAL ARCHIVE</h2>
+      <div class="gsap-reveal-wrapper">
+        <h2 class="title-h1 gsap-reveal-target" style="color: var(--color-yellow);" data-i18n="archive_title">VISUAL ARCHIVE</h2>
+      </div>
 
       <div class="archive-video-grid">
         <!-- Official Music Video Embed -->
         <div class="video-card">
           <div class="video-wrapper">
-            <iframe src="https://youtu.be/WXS-o57VJ5w?si=YbHJnGjQuEOFrC7h" title="CORTIS GO MV" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen id="mv-iframe"></iframe>
+            <iframe src="https://www.youtube.com/embed/7lK7i7F487w?enablejsapi=1" title="CORTIS GO MV" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen id="mv-iframe"></iframe>
           </div>
           <h3 class="video-title">OFFICIAL MUSIC VIDEO</h3>
           <p style="font-size: 0.95rem; opacity: 0.8;" data-i18n="mv_desc">
@@ -1530,7 +2079,9 @@
          ========================================================================== -->
     <section id="credits">
       <div class="section-tag" style="color: var(--color-blue);" data-i18n="sec_09_tag">09 // METADATA</div>
-      <h2 class="title-h1" style="color: var(--color-black);" data-i18n="credits_title">PRODUCTION CREDITS</h2>
+      <div class="gsap-reveal-wrapper">
+        <h2 class="title-h1 gsap-reveal-target" style="color: var(--color-black);" data-i18n="credits_title">PRODUCTION CREDITS</h2>
+      </div>
 
       <div class="credits-grid">
         <div class="credit-group">
@@ -1574,7 +2125,7 @@
           </div>
         </div>
 
-        <button class="replay-btn" onclick="scrollToTop()">
+        <button class="replay-btn" onclick="scrollToTop()" data-cursor-text="TOP">
           <i data-lucide="arrow-up"></i>
           <span data-i18n="replay_btn">REPLAY EXPERIENCE</span>
         </button>
@@ -1584,7 +2135,7 @@
   </main>
 
   <!-- ==========================================================================
-       JAVASCRIPT ES MODULE ENGINE
+       JAVASCRIPT ES MODULE ENGINE WITH ENHANCED GSAP ANIMATIONS
        ========================================================================== -->
   <script type="module">
     /* ==========================================================================
@@ -1727,7 +2278,7 @@
     };
 
     /* ==========================================================================
-       02. MEMBER DATA & INTERACTIVE GALLERY
+       02. MEMBER DATA & PORTRAITS FOR ALL 5 MEMBERS
        ========================================================================== */
     const membersData = {
       martin: {
@@ -1738,7 +2289,7 @@
         height: "190.5 cm (6'3\")",
         credits: "GO!, JoyRide, Lullaby",
         specialty: "Vocal Arranging & Trap Beats",
-        bgHex: "#F5E900"
+        image: "assets/images/martin-cortis.webp"
       },
       james: {
         name: "JAMES",
@@ -1748,7 +2299,7 @@
         height: "183 cm",
         credits: "GO!, What You Want, FaSHioN",
         specialty: "Multilingual Rap & Choreography",
-        bgHex: "#174BE8"
+        image: "assets/images/james-cortis.webp"
       },
       juhoon: {
         name: "JUHOON",
@@ -1758,7 +2309,7 @@
         height: "181 cm",
         credits: "GO!, What You Want, FaSHioN",
         specialty: "Dynamic Vocals & Rhythm",
-        bgHex: "#FFFFFF"
+        image: "assets/images/juhoon-cortis.webp"
       },
       seonghyeon: {
         name: "SEONGHYEON",
@@ -1768,7 +2319,7 @@
         height: "179 cm",
         credits: "All 5 EP Tracks",
         specialty: "Audio Engineering & Riffs",
-        bgHex: "#F5E900"
+        image: "assets/images/seonghyeon-cortis.webp"
       },
       keonho: {
         name: "KEONHO",
@@ -1778,7 +2329,7 @@
         height: "180 cm",
         credits: "GO!, What You Want, JoyRide",
         specialty: "Agile Movement & Harmonies",
-        bgHex: "#174BE8"
+        image: "assets/images/keonho-cortis.webp"
       }
     };
 
@@ -1787,30 +2338,40 @@
       if (!data) return;
 
       document.querySelectorAll('.member-tab-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      if (event && event.target) {
+        event.target.classList.add('active');
+      }
 
-      document.getElementById('member-display-name').innerText = data.name;
-      document.getElementById('member-role-sticker').innerText = data.role;
-      document.getElementById('member-display-bio').innerText = data.bio;
-      document.getElementById('member-val-hometown').innerText = data.hometown;
-      document.getElementById('member-val-height').innerText = data.height;
-      document.getElementById('member-val-credits').innerText = data.credits;
-      document.getElementById('member-val-specialty').innerText = data.specialty;
+      // Smooth GSAP transition for Member details card
+      gsap.to('#member-card-display', {
+        opacity: 0,
+        y: 15,
+        duration: 0.2,
+        onComplete: () => {
+          document.getElementById('member-display-name').innerText = data.name;
+          document.getElementById('member-role-sticker').innerText = data.role;
+          document.getElementById('member-display-bio').innerText = data.bio;
+          document.getElementById('member-val-hometown').innerText = data.hometown;
+          document.getElementById('member-val-height').innerText = data.height;
+          document.getElementById('member-val-credits').innerText = data.credits;
+          document.getElementById('member-val-specialty').innerText = data.specialty;
 
-      // Render Dynamic SVG Graphic Silhouette
-      const portraitSvg = document.getElementById('member-svg-portrait');
-      portraitSvg.innerHTML = `
-        <rect width="100%" height="100%" fill="${data.bgHex}" />
-        <circle cx="200" cy="180" r="100" fill="#111111" opacity="0.85"/>
-        <path d="M 80 480 Q 200 300 320 480 Z" fill="#111111" />
-        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Anton" font-size="70" fill="#FFFFFF" opacity="0.25">
-          ${data.name}
-        </text>
-      `;
+          const portraitImage = document.getElementById('member-portrait-image');
+          portraitImage.src = data.image;
+          portraitImage.alt = `${data.name} of CORTIS`;
+
+          gsap.to('#member-card-display', {
+            opacity: 1,
+            y: 0,
+            duration: 0.35,
+            ease: 'power2.out'
+          });
+        }
+      });
     };
 
     /* ==========================================================================
-       03. LYRICS ANALYSIS SEGMENT SWITCHER
+       03. LYRICS ANALYSIS SEGMENT SWITCHER WITH GSAP FADE
        ========================================================================== */
     const lyricsData = {
       intro: {
@@ -1845,16 +2406,251 @@
       }
     };
 
+    let liveLyricsData = {};
+    const liveLyricSectionStarts = [
+      { key: "intro", time: 0 },
+      { key: "verse1", time: 23 },
+      { key: "prechorus", time: 52 },
+      { key: "chorus", time: 69 },
+      { key: "verse2", time: 102 },
+      { key: "outro", time: 129 }
+    ];
+
+    let activeLyricSegmentKey = "intro";
+
+    function formatLyricsTime(seconds) {
+      if (!Number.isFinite(seconds) || seconds < 0) return "--:--";
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = Math.floor(seconds % 60);
+      return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+    }
+
+    function renderRealtimeLyrics(segKey = activeLyricSegmentKey) {
+      const segment = liveLyricsData[segKey];
+      if (!segment) return;
+
+      const currentTime = audioElement && Number.isFinite(audioElement.currentTime)
+        ? audioElement.currentTime
+        : 0;
+      const timedLines = segment.lines
+        .map((line, index) => ({ ...line, index }))
+        .filter(line => Number.isFinite(line.time) && line.time >= 0)
+        .sort((a, b) => a.time - b.time);
+      const currentLinePosition = timedLines.reduce(
+        (activeIndex, line, index) => line.time <= currentTime ? index : activeIndex,
+        -1
+      );
+      const currentLine = timedLines[currentLinePosition];
+      const previousLine = currentLinePosition > 0 ? timedLines[currentLinePosition - 1] : null;
+      const nextLine = timedLines[currentLinePosition + 1] || timedLines[0];
+      const list = document.getElementById("realtime-lyrics-list");
+
+      document.getElementById("realtime-lyrics-section").innerText = lyricsData[segKey].tag.split("// ")[1];
+      if (list.dataset.segment !== segKey) {
+        list.replaceChildren();
+        delete list.dataset.activeLine;
+        segment.lines.forEach((line, index) => {
+          const row = document.createElement("div");
+          row.className = "realtime-lyrics-row";
+          row.dataset.lineIndex = String(index);
+
+          const time = document.createElement("span");
+          time.className = "realtime-lyrics-time";
+          time.innerText = formatLyricsTime(line.time);
+
+          const text = document.createElement("span");
+          text.innerText = line.text;
+
+          row.append(time, text);
+          list.append(row);
+        });
+        list.dataset.segment = segKey;
+      }
+
+      const previousText = previousLine ? previousLine.text : "";
+      const currentText = currentLine
+        ? currentLine.text
+        : timedLines.length ? "WAITING FOR FIRST LINE" : "SET YOUR TIMESTAMPS";
+      const nextText = currentLine
+        ? (timedLines[currentLinePosition + 1]?.text || "")
+        : (nextLine?.text || "Edit the line times in liveLyricsData below.");
+      const previousElement = document.getElementById("realtime-lyrics-previous");
+      const currentElement = document.getElementById("realtime-lyrics-current");
+      const nextElement = document.getElementById("realtime-lyrics-next");
+      if (previousElement.innerText !== previousText) previousElement.innerText = previousText;
+      if (currentElement.innerText !== currentText) currentElement.innerText = currentText;
+      if (nextElement.innerText !== nextText) nextElement.innerText = nextText;
+      currentElement.classList.toggle("placeholder", !currentLine);
+      document.getElementById("realtime-lyrics-hint").innerText = timedLines.length
+        ? "Line times use seconds from the start of the audio."
+        : "Add a time in seconds to each lyric line to enable sync.";
+
+      list.querySelectorAll(".realtime-lyrics-row").forEach(row => row.classList.remove("active"));
+      if (currentLine) {
+        const activeRow = list.querySelector(`[data-line-index="${currentLine.index}"]`);
+        if (activeRow) {
+          activeRow.classList.add("active");
+          if (list.dataset.activeLine !== String(currentLine.index)) {
+            activeRow.scrollIntoView({ block: "nearest", behavior: "smooth" });
+            list.dataset.activeLine = String(currentLine.index);
+          }
+        }
+      } else {
+        delete list.dataset.activeLine;
+      }
+
+      const panel = document.getElementById("realtime-lyrics-panel");
+      const status = document.getElementById("lyrics-sync-status");
+      panel.classList.toggle("is-syncing", Boolean(isPlaying && !isProceduralMode && timedLines.length));
+      const statusText = isPlaying && isProceduralMode
+        ? "AUDIO TIMING UNAVAILABLE"
+        : isPlaying && timedLines.length ? "LIVE SYNC"
+        : timedLines.length ? "READY TO SYNC"
+        : "ADD TIMESTAMPS";
+      if (status.innerText !== statusText) status.innerText = statusText;
+
+      document.getElementById("realtime-lyrics-clock").innerText = formatLyricsTime(currentTime);
+      const duration = audioElement && Number.isFinite(audioElement.duration) ? audioElement.duration : 0;
+      document.getElementById("realtime-lyrics-progress-fill").style.width = duration
+        ? `${Math.min(currentTime / duration * 100, 100)}%`
+        : "0%";
+      updateLyricsPlaybackButton();
+    }
+
+    function updateRealtimeLyrics() {
+      if (audioElement && Number.isFinite(audioElement.currentTime)) {
+        const currentSection = [...liveLyricSectionStarts]
+          .reverse()
+          .find(section => audioElement.currentTime >= section.time);
+        if (currentSection && currentSection.key !== activeLyricSegmentKey) {
+          window.showLyricSegment(currentSection.key);
+          return;
+        }
+      }
+      renderRealtimeLyrics();
+    }
+
+    function updateLyricsPlaybackButton() {
+      const button = document.getElementById("lyrics-play-pause");
+      if (!button) return;
+      button.innerText = isPlaying ? "PAUSE" : "PLAY";
+      button.setAttribute("aria-label", isPlaying ? "Pause audio" : "Play audio");
+    }
+
+    function seekLyricsAudio(offset) {
+      initAudioEngine();
+      if (isProceduralMode) {
+        document.getElementById("lyrics-sync-status").innerText = "SEEK UNAVAILABLE";
+        return;
+      }
+
+      const duration = Number.isFinite(audioElement.duration) ? audioElement.duration : Infinity;
+      audioElement.currentTime = Math.min(Math.max(0, audioElement.currentTime + offset), duration);
+      updateRealtimeLyrics();
+    }
+
+    const lyricsPanel = document.getElementById("realtime-lyrics-panel");
+    document.getElementById("lyrics-back-10").addEventListener("click", () => seekLyricsAudio(-10));
+    document.getElementById("lyrics-forward-10").addEventListener("click", () => seekLyricsAudio(10));
+    document.getElementById("lyrics-play-pause").addEventListener("click", toggleAudio);
+    document.getElementById("lyrics-fullscreen").addEventListener("click", async () => {
+      try {
+        if (document.fullscreenElement === lyricsPanel) {
+          await document.exitFullscreen();
+        } else {
+          await lyricsPanel.requestFullscreen();
+        }
+      } catch (error) {
+        console.error("Could not change live lyrics fullscreen mode.", error);
+        document.getElementById("lyrics-sync-status").innerText = "FULLSCREEN UNAVAILABLE";
+      }
+    });
+
+    document.addEventListener("fullscreenchange", () => {
+      const isFullscreen = document.fullscreenElement === lyricsPanel;
+      const button = document.getElementById("lyrics-fullscreen");
+      button.innerText = isFullscreen ? "EXIT FULLSCREEN" : "FULLSCREEN";
+      button.setAttribute("aria-label", isFullscreen ? "Exit fullscreen" : "Enter fullscreen");
+    });
+
+    document.addEventListener("keydown", event => {
+      if (document.fullscreenElement !== lyricsPanel ||
+          (event.target instanceof Element &&
+           event.target.closest("button, input, textarea, select, [contenteditable='true']"))) return;
+
+      if (event.code === "Space") {
+        event.preventDefault();
+        toggleAudio();
+      } else if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        event.preventDefault();
+        seekLyricsAudio(event.key === "ArrowLeft" ? -10 : 10);
+      }
+    });
+
+    async function loadRealtimeLyrics() {
+      try {
+        const response = await fetch("./lyric-timing.json");
+        if (!response.ok) {
+          throw new Error(`Could not load lyric-timing.json (${response.status}).`);
+        }
+
+        const data = await response.json();
+        if (!Array.isArray(data.lyrics)) {
+          throw new Error("lyric-timing.json must contain a lyrics array.");
+        }
+
+        const groupedLyrics = Object.fromEntries(
+          liveLyricSectionStarts.map(section => [section.key, { lines: [] }])
+        );
+
+        data.lyrics.forEach(line => {
+          if (!Number.isFinite(line.time) || typeof line.text !== "string") {
+            throw new Error("Each lyric needs a numeric time and text.");
+          }
+
+          const section = [...liveLyricSectionStarts]
+            .reverse()
+            .find(item => line.time >= item.time);
+          if (section) groupedLyrics[section.key].lines.push(line);
+        });
+
+        liveLyricsData = groupedLyrics;
+        renderRealtimeLyrics();
+      } catch (error) {
+        console.error("Realtime lyrics could not be loaded.", error);
+        document.getElementById("lyrics-sync-status").innerText = "LYRICS LOAD ERROR";
+        document.getElementById("realtime-lyrics-hint").innerText =
+          "Could not load lyric-timing.json. Open this page using a local web server.";
+      }
+    }
+
     window.showLyricSegment = function(segKey) {
       const seg = lyricsData[segKey];
       if (!seg) return;
 
-      document.querySelectorAll('.lyric-segment-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      activeLyricSegmentKey = segKey;
+      document.querySelectorAll(".lyric-segment-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.lyricSegment === segKey);
+      });
+      renderRealtimeLyrics(segKey);
 
-      document.getElementById('lyric-segment-tag').innerText = seg.tag;
-      document.getElementById('lyric-excerpt-text').innerText = seg.excerpt;
-      document.getElementById('lyric-analysis-desc').innerText = seg.analysis;
+      gsap.to('#lyric-display-box', {
+        opacity: 0,
+        x: -10,
+        duration: 0.18,
+        onComplete: () => {
+          document.getElementById('lyric-segment-tag').innerText = seg.tag;
+          document.getElementById('lyric-excerpt-text').innerText = seg.excerpt;
+          document.getElementById('lyric-analysis-desc').innerText = seg.analysis;
+
+          gsap.to('#lyric-display-box', {
+            opacity: 1,
+            x: 0,
+            duration: 0.3,
+            ease: 'power2.out'
+          });
+        }
+      });
     };
 
     /* ==========================================================================
@@ -1869,6 +2665,8 @@
     let isPlaying = false;
     let isProceduralMode = false;
     let synthInterval = null;
+
+    loadRealtimeLyrics();
 
     function initAudioEngine() {
       if (audioCtx) return;
@@ -1891,11 +2689,14 @@
       analyserNode.connect(audioCtx.destination);
 
       // Create Audio Element
-      audioElement = new Audio("assets/audio/CORTIS – GO! Instrumental.mp3");
+      audioElement = new Audio("assets/audio/CORTIS GO! Easy Lyrics.mp3");
       audioElement.crossOrigin = "anonymous";
       audioElement.loop = true;
+      ["timeupdate", "seeked", "loadedmetadata"].forEach(eventName => {
+        audioElement.addEventListener(eventName, updateRealtimeLyrics);
+      });
 
-      // Catch error if local file is missing and fallback to Procedural Web Audio Synth!
+      // Fallback to Procedural Web Audio Synth if audio file is not locally provided
       audioElement.addEventListener('error', () => {
         console.warn("Local audio file not found. Switching to Web Audio API Procedural Synth!");
         isProceduralMode = true;
@@ -1919,14 +2720,14 @@
           const osc = audioCtx.createOscillator();
           const oscGain = audioCtx.createGain();
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(120, now);
-          osc.frequency.exponentialRampToValueAtTime(35, now + 0.15);
+          osc.frequency.setValueAtTime(130, now);
+          osc.frequency.exponentialRampToValueAtTime(32, now + 0.18);
           oscGain.gain.setValueAtTime(1, now);
-          oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+          oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.38);
           osc.connect(oscGain);
           oscGain.connect(filterNode);
           osc.start(now);
-          osc.stop(now + 0.35);
+          osc.stop(now + 0.38);
         }
 
         // Snare / Rimshot (Steps 4, 12)
@@ -1934,8 +2735,8 @@
           const osc = audioCtx.createOscillator();
           const oscGain = audioCtx.createGain();
           osc.type = 'triangle';
-          osc.frequency.setValueAtTime(280, now);
-          oscGain.gain.setValueAtTime(0.7, now);
+          osc.frequency.setValueAtTime(290, now);
+          oscGain.gain.setValueAtTime(0.75, now);
           oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
           osc.connect(oscGain);
           oscGain.connect(filterNode);
@@ -1948,8 +2749,8 @@
           const osc = audioCtx.createOscillator();
           const oscGain = audioCtx.createGain();
           osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(8000, now);
-          oscGain.gain.setValueAtTime(0.2, now);
+          osc.frequency.setValueAtTime(8500, now);
+          oscGain.gain.setValueAtTime(0.25, now);
           oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
           osc.connect(oscGain);
           oscGain.connect(filterNode);
@@ -1958,7 +2759,7 @@
         }
 
         step = (step + 1) % 16;
-      }, 150); // ~140 BPM
+      }, 145); // ~142 BPM
     }
 
     function toggleAudio() {
@@ -1969,7 +2770,6 @@
       }
 
       const widget = document.getElementById('audio-widget');
-      const icon = document.getElementById('audio-icon');
 
       if (!isPlaying) {
         if (!isProceduralMode) {
@@ -1977,17 +2777,20 @@
             isPlaying = true;
             widget.classList.add('playing');
             lucide.createIcons();
+            updateRealtimeLyrics();
           }).catch(err => {
             console.warn("Autoplay blocked or file missing. Fallback to procedural synth.", err);
             isProceduralMode = true;
             isPlaying = true;
             widget.classList.add('playing');
             triggerProceduralBeat();
+            updateRealtimeLyrics();
           });
         } else {
           isPlaying = true;
           widget.classList.add('playing');
           triggerProceduralBeat();
+          updateRealtimeLyrics();
         }
       } else {
         isPlaying = false;
@@ -1997,6 +2800,7 @@
         }
         if (synthInterval) clearInterval(synthInterval);
       }
+      updateRealtimeLyrics();
     }
 
     document.getElementById('audio-toggle-btn').addEventListener('click', toggleAudio);
@@ -2013,24 +2817,26 @@
         audioElement.play();
         isPlaying = true;
         document.getElementById('audio-widget').classList.add('playing');
+        updateRealtimeLyrics();
       }
     });
 
-    // Section Audio Preset Automation via Web Audio API
+    // Section Audio Preset Automation via Web Audio API Filter Nodes
     function applyAudioPreset(presetName, cutoffFreq) {
       document.getElementById('audio-preset-label').innerText = `PRESET: ${presetName}`;
       if (filterNode && audioCtx) {
-        filterNode.frequency.setTargetAtTime(cutoffFreq, audioCtx.currentTime, 0.3);
+        filterNode.frequency.setTargetAtTime(cutoffFreq, audioCtx.currentTime, 0.35);
       }
     }
 
     /* ==========================================================================
-       05. REAL-TIME CANVAS VISUALIZER
+       05. ENHANCED DUAL-LAYER CANVAS FREQUENCY VISUALIZER
        ========================================================================== */
     const canvas = document.getElementById('visualizer-canvas');
     const ctx = canvas.getContext('2d');
 
     function resizeCanvas() {
+      if (!canvas.parentElement) return;
       canvas.width = canvas.parentElement.clientWidth;
       canvas.height = canvas.parentElement.clientHeight;
     }
@@ -2047,24 +2853,49 @@
       if (analyserNode && isPlaying) {
         analyserNode.getByteFrequencyData(dataArray);
       } else {
-        // Subtle ambient idle wave
+        // Ambient idle frequency wave
         for (let i = 0; i < bufferLength; i++) {
-          dataArray[i] = Math.sin(Date.now() * 0.003 + i) * 20 + 25;
+          dataArray[i] = Math.sin(Date.now() * 0.004 + i * 0.5) * 22 + 28;
         }
       }
 
-      const barWidth = (canvas.width / bufferLength) * 1.5;
+      const barWidth = (canvas.width / bufferLength) * 1.4;
       let x = 0;
 
+      // Render Frequency Bars
       for (let i = 0; i < bufferLength; i++) {
-        const barHeight = (dataArray[i] / 255) * canvas.height * 0.85;
+        const barHeight = (dataArray[i] / 255) * canvas.height * 0.82;
 
-        // Alternate colors based on streetwear theme
+        // Alternate streetwear primary colors
         ctx.fillStyle = i % 2 === 0 ? '#F5E900' : '#174BE8';
         ctx.fillRect(x, canvas.height - barHeight, barWidth - 4, barHeight);
 
+        // Top accent cap on bars
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(x, canvas.height - barHeight - 4, barWidth - 4, 3);
+
         x += barWidth;
       }
+
+      // Draw Smooth Waveform Line Layer over Frequency Bars
+      ctx.beginPath();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#FFFFFF';
+      let sliceWidth = canvas.width / bufferLength;
+      let lineX = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        let v = dataArray[i] / 255.0;
+        let y = canvas.height - (v * canvas.height * 0.82) - 10;
+
+        if (i === 0) {
+          ctx.moveTo(lineX, y);
+        } else {
+          ctx.lineTo(lineX, y);
+        }
+        lineX += sliceWidth;
+      }
+      ctx.stroke();
     }
     drawVisualizer();
 
@@ -2075,27 +2906,27 @@
 
     if (btsVideo) {
       btsVideo.addEventListener('play', () => {
-        if (isPlaying && audioElement && !isProceduralMode) {
+        if (isPlaying && gainNode && audioCtx) {
           // Smoothly duck background audio
           gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.4);
         }
       });
 
       btsVideo.addEventListener('pause', () => {
-        if (isPlaying && gainNode) {
+        if (isPlaying && gainNode && audioCtx) {
           gainNode.gain.setTargetAtTime(1, audioCtx.currentTime, 0.4);
         }
       });
 
       btsVideo.addEventListener('ended', () => {
-        if (isPlaying && gainNode) {
+        if (isPlaying && gainNode && audioCtx) {
           gainNode.gain.setTargetAtTime(1, audioCtx.currentTime, 0.4);
         }
       });
     }
 
     /* ==========================================================================
-       07. GSAP SCROLLTRIGGER & LENIS SMOOTH SCROLLING
+       07. ADVANCED GSAP MOTION DESIGN & SCROLLTRIGGER TIMELINES
        ========================================================================== */
     gsap.registerPlugin(ScrollTrigger);
 
@@ -2135,11 +2966,73 @@
       });
     });
 
-    // Intro Experience Button Trigger
-    document.getElementById('enter-experience-btn').addEventListener('click', () => {
-      toggleAudio(); // Unlock Web Audio context
+    // Kinetic Title Reveal Masking Animations
+    gsap.utils.toArray('.gsap-reveal-target').forEach(target => {
+      gsap.fromTo(target,
+        { yPercent: 120, skewY: 4 },
+        {
+          yPercent: 0,
+          skewY: 0,
+          duration: 1.1,
+          ease: 'power4.out',
+          scrollTrigger: {
+            trigger: target.parentElement,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+          }
+        }
+      );
+    });
 
-      gsap.to('#intro-screen', {
+    // Hero Background Graphic Parallax Scroll Effect
+    gsap.to('#hero-bg-text', {
+      xPercent: -20,
+      rotate: 25,
+      scrollTrigger: {
+        trigger: '#hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1
+      }
+    });
+
+    // Interactive 3D Card Tilt Effect on Mouse Movement
+    document.querySelectorAll('.gsap-tilt').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+
+        gsap.to(card, {
+          rotateX: -y * 0.04,
+          rotateY: x * 0.04,
+          duration: 0.3,
+          ease: 'power2.out'
+        });
+      });
+
+      card.addEventListener('mouseleave', () => {
+        gsap.to(card, {
+          rotateX: 0,
+          rotateY: 0,
+          duration: 0.5,
+          ease: 'power2.out'
+        });
+      });
+    });
+
+    // Intro Screen Reveal Sequence
+    document.getElementById('enter-experience-btn').addEventListener('click', () => {
+      toggleAudio(); // Unlock AudioContext
+
+      const tl = gsap.timeline();
+      tl.to('#intro-go-text', {
+        scale: 1.4,
+        rotate: -5,
+        duration: 0.3,
+        ease: 'power2.in'
+      })
+      .to('#intro-screen', {
         yPercent: -100,
         duration: 1,
         ease: 'power4.inOut',
@@ -2155,24 +3048,63 @@
     };
 
     /* ==========================================================================
-       08. CUSTOM CURSOR MOTION & INITIALIZATION
+       08. CONTEXTUAL CUSTOM CURSOR CONTROLLER
        ========================================================================== */
     const cursor = document.getElementById('cursor');
+    const cursorLabel = document.getElementById('cursor-label');
+
     window.addEventListener('mousemove', (e) => {
       gsap.to(cursor, {
         x: e.clientX,
         y: e.clientY,
-        duration: 0.15,
+        duration: 0.12,
         ease: 'power2.out'
       });
     });
 
-    document.querySelectorAll('button, a, input, .track-row').forEach(el => {
-      el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
-      el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+    document.querySelectorAll('[data-cursor-text], button, a, .track-row').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        const customText = el.getAttribute('data-cursor-text') || 'GO!';
+        cursorLabel.innerText = customText;
+        cursor.classList.add('hovered');
+      });
+
+      el.addEventListener('mouseleave', () => {
+        cursor.classList.remove('hovered');
+      });
     });
 
-    // Initial Member Load
+    const navBar = document.querySelector('.nav-bar');
+    const navMenuToggle = document.getElementById('nav-menu-toggle');
+
+    function setMobileMenuOpen(isOpen) {
+      navBar.classList.toggle('menu-open', isOpen);
+      navMenuToggle.setAttribute('aria-expanded', String(isOpen));
+      navMenuToggle.innerText = isOpen ? 'CLOSE' : 'MENU';
+    }
+
+    navMenuToggle.addEventListener('click', () => {
+      setMobileMenuOpen(!navBar.classList.contains('menu-open'));
+    });
+
+    document.querySelectorAll('#primary-navigation a').forEach(link => {
+      link.addEventListener('click', () => setMobileMenuOpen(false));
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && navBar.classList.contains('menu-open')) {
+        setMobileMenuOpen(false);
+        navMenuToggle.focus();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 900 && navBar.classList.contains('menu-open')) {
+        setMobileMenuOpen(false);
+      }
+    });
+
+    // Initial Load Triggers
     showMember('martin');
     showLyricSegment('intro');
     lucide.createIcons();
